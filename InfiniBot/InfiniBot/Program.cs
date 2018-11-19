@@ -8,6 +8,7 @@ namespace InfiniBot
 {
     static class Program
     {
+        public static Form MainForm;
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -16,7 +17,7 @@ namespace InfiniBot
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(MainForm = new Form());
         }
     }
 }
