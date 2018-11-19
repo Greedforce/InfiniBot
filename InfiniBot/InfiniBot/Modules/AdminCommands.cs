@@ -6,7 +6,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
-namespace InfiniBot.Modules
+namespace InfiniBot
 {
     public class AdminCommands : ModuleBase<SocketCommandContext>
     {
