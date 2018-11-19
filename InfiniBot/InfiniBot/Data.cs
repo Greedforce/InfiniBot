@@ -19,7 +19,8 @@ namespace InfiniBot
             FILE_PATH = "BotFiles\\",
             REQUESTS_AWAITING_APPROVAL_FILE_NAME = "RequestsAwaitingApproval.txt",
             URL_IMAGE_INFINITY_GAMING = "https://i.imgur.com/hQR0KSE.png",
-            URL_ERROR_ICON = "https://i.imgur.com/HSrsLjE.png";
+            URL_ERROR_ICON = "https://i.imgur.com/HSrsLjE.png",
+            EMBED_FOOTER_DELETE = "(This message will delete itself in 5 seconds)";
 
         public const ulong
             GUILD_ID_INFINITY_GAMING = 238251468384108545,
@@ -66,12 +67,31 @@ namespace InfiniBot
 
             return builder.Build();
         }
+
+        public static EmbedBuilder GetFeedbackEmbed()
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+
+            builder.WithColor(COLOR_BOT)
+                .WithFooter(EMBED_FOOTER_DELETE);
+
+            return builder;
+        }
     }
 
     public class TempMessage
     {
         public IMessage message { get; set; }
         public Timer timer { get; set; }
+
+        public TempMessage(IMessage message)
+        {
+            this.message = message;
+            timer = new Timer(Data.MESSAGE_DELETE_DELAY * 1000);
+            timer.AutoReset = false;
+            timer.Elapsed += ElapsedLifeSpan;
+            timer.Start();
+        }
 
         public TempMessage(IMessage message, double lifeSpan)
         {

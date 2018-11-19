@@ -62,6 +62,15 @@ namespace InfiniBot
             }
         }
 
+        public bool IsActive()
+        {
+            if (_client != null)
+            {
+                return _client.LoginState == LoginState.LoggedIn;
+            }
+            return false;
+        }
+
         private Task UserJoined(SocketGuildUser user)
         {
             Embed embed = Data.GetJoinEmbed(user.Guild);

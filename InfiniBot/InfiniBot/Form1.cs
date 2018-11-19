@@ -83,9 +83,9 @@ namespace InfiniBot
             return Task.CompletedTask;
         }
 
+        // Compiles a message with the information from the selected listView item and displays it to the user.
         private void buttonView_Click(object sender, EventArgs e)
         {
-            // Compiles a message with the information from the selected listView item and displays it to the user.
             if (listViewConsole.SelectedItems.Count > 0)
             {
                 foreach (ListViewItem item in listViewConsole.SelectedItems)
@@ -93,24 +93,23 @@ namespace InfiniBot
                     string message = "";
                     if (item.SubItems.Count > 0)
                     {
-
-                        message += $"Time: {item.SubItems[0].Text}";
+                        message += $"{listViewConsole.Columns[0].Text}: {item.SubItems[0].Text}";
                     }
                     if (item.SubItems.Count > 1)
                     {
-                        message += $"\nSeverity: {item.SubItems[1].Text}";
+                        message += $"\n{listViewConsole.Columns[1].Text}: {item.SubItems[1].Text}";
                     }
                     if (item.SubItems.Count > 2)
                     {
-                        message += $"\nSource: {item.SubItems[2].Text}";
+                        message += $"\n{listViewConsole.Columns[2].Text}: {item.SubItems[2].Text}";
                     }
                     if (item.SubItems.Count > 3)
                     {
-                        message += "\nMessage:\n" + item.SubItems[3].Text;
+                        message += $"\n{listViewConsole.Columns[3].Text}:\n{item.SubItems[3].Text}";
                     }
                     if (item.SubItems.Count > 4)
                     {
-                        message += "\n\nException:\n" + item.SubItems[4].Text;
+                        message += $"\n\n{listViewConsole.Columns[4].Text}:\n{item.SubItems[4].Text}";
                     }
 
                     MessageBox.Show(message,
@@ -124,6 +123,22 @@ namespace InfiniBot
             await bot.RunBotAsync();
             buttonStartBot.Enabled = false;
             buttonStopBot.Enabled = true;
+        }
+
+        public async Task ToggleBot()
+        {
+            if (bot.IsActive())
+            {
+                await bot.StopBotAsync();
+                buttonStopBot.Enabled = false;
+                buttonStartBot.Enabled = true;
+            }
+            else
+            {
+                await bot.RunBotAsync();
+                buttonStartBot.Enabled = false;
+                buttonStopBot.Enabled = true;
+            }
         }
 
         private async void buttonStopBot_Click(object sender, EventArgs e)
