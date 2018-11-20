@@ -12,7 +12,7 @@ namespace InfiniBot
 {
     public class HelpfulCommands : ModuleBase<SocketCommandContext>
     {
-        [Command("Help")]
+        [Command("Help", RunMode = RunMode.Async)]
         [Summary("Provides information on a specific command or module, or a list of all available commands and modules, if no parameter is provided.")]
         public async Task SendHelpAsync([Summary("The name of a command or module")][Remainder]string commandOrModule = "")
         {
@@ -244,7 +244,7 @@ namespace InfiniBot
             }
         }
 
-        [Command("Roll")]// Needs to be updated to a better system
+        [Command("Roll", RunMode = RunMode.Async)]// Needs to be updated to a better system
         [Alias("R")]
         [Summary("Rolls the specified dice and displays the result.")]
         public async Task RollDice(
@@ -306,7 +306,7 @@ namespace InfiniBot
             }
         }
 
-        [Command("Group")]
+        [Command("Group", RunMode = RunMode.Async)]
         [Alias("G")]
         [Summary("Takes the given objects and splits them into the specified number of groups.")]
         public async Task SplitMembersIntoGroups([Summary("The number of groups you wish to divide the objects into.")]int groups,
@@ -393,8 +393,8 @@ namespace InfiniBot
                         case GuildPermission.ViewAuditLog:
                             group.Item2.Add("`View Audit Log`");
                             break;
-                        case GuildPermission.ReadMessages:
-                            group.Item2.Add("`Read Messages`");
+                        case GuildPermission.ViewChannel:
+                            group.Item2.Add("`View Channel`");
                             break;
                         case GuildPermission.SendMessages:
                             group.Item2.Add("`Send Messages`");

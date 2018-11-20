@@ -10,7 +10,7 @@ namespace InfiniBot
 {
     public class AdminCommands : ModuleBase<SocketCommandContext>
     {
-        [Command("Shutdown")]
+        [Command("Shutdown", RunMode = RunMode.Sync)]
         [Summary("Shuts down the bot and provides the reason, if given.")]
         [RequireUserPermission(GuildPermission.Administrator, Group = "user")]
         [RequireOwner(Group = "user")]
@@ -23,7 +23,7 @@ namespace InfiniBot
             await Program.MainForm.ToggleBot();
         }
 
-        [Command("Say")]
+        [Command("Say", RunMode = RunMode.Async)]
         [Summary("Causes the bot to send the given message.")]
         [RequireUserPermission(GuildPermission.Administrator, Group = "user")]
         [RequireOwner(Group = "user")]
@@ -34,7 +34,7 @@ namespace InfiniBot
             await ReplyAsync(message);
         }
 
-        [Command("JoinMessage")]
+        [Command("JoinMessage", RunMode = RunMode.Async)]
         [Summary("Causes the bot to send the join message to the specified user.")]
         [RequireUserPermission(GuildPermission.Administrator, Group = "user")]
         [RequireOwner(Group = "user")]
@@ -50,7 +50,8 @@ namespace InfiniBot
             Embed embed = Data.GetJoinEmbed(Context.Guild);
             await user.SendMessageAsync("", false, embed);
             IMessage m = await ReplyAsync(embed: Data.GetFeedbackEmbed().WithTitle("Join Message Sent").WithDescription($"I've PMed the join message to {user.Username}").Build());
-            Data.tempMessages.Add(new TempMessage(m));
+            await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
+            await m.DeleteAsync();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace InfiniBot
 {
     public class MessageManagementCommands : ModuleBase<SocketCommandContext>
     {
-        [Command("Prune")]
+        [Command("Prune", RunMode = RunMode.Async)]
         [RequireUserPermission(GuildPermission.Administrator, Group = "user")]
         [RequireOwner(Group = "user")]
         [Summary("Deletes the last x messages sent in the text channel.")]
@@ -46,10 +46,11 @@ namespace InfiniBot
             }
             await ((ITextChannel)Context.Channel).DeleteMessagesAsync(messages);
             IUserMessage m = await ReplyAsync(embed: Data.GetFeedbackEmbed().WithColor(Data.COLOR_SUCCESS).WithTitle("Prune successful").WithDescription($"The last {amount} " + skipText + "messages sent in this channel have been deleted.").Build());
-            Data.tempMessages.Add(new TempMessage(m));
+            await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
+            await m.DeleteAsync();
         }
 
-        [Command("PruneFrom")]
+        [Command("PruneFrom", RunMode = RunMode.Async)]
         [Alias("PruneF")]
         [RequireUserPermission(GuildPermission.Administrator, Group = "user")]
         [RequireOwner(Group = "user")]
@@ -77,10 +78,11 @@ namespace InfiniBot
             }
             await ((ITextChannel)Context.Channel).DeleteMessagesAsync(messages);
             IUserMessage m = await ReplyAsync(embed: Data.GetFeedbackEmbed().WithColor(Data.COLOR_SUCCESS).WithTitle("Prune successful").WithDescription($"The last {amount} " + skipText + "messages sent in this channel have been deleted.").Build());
-            Data.tempMessages.Add(new TempMessage(m));
+            await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
+            await m.DeleteAsync();
         }
 
-        [Command("Move")]
+        [Command("Move", RunMode = RunMode.Async)]
         [RequireUserPermission(GuildPermission.Administrator, Group = "user")]
         [RequireOwner(Group = "user")]
         [Summary("Moves a specified amount of messages, after another specified amount of messages, sent in the text channel to another channel provided by id or tag.")]
@@ -167,10 +169,11 @@ namespace InfiniBot
             {
                 m = await ReplyAsync(embed: Data.GetFeedbackEmbed().WithColor(Data.COLOR_ERROR).WithTitle("Move unsuccessful").WithDescription($"Could not find channel with id: `" + channel + "´. Please make sure you post a valid channel id.").Build());
             }
-            Data.tempMessages.Add(new TempMessage(m));
+            await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
+            await m.DeleteAsync();
         }
 
-        [Command("MoveFrom")]
+        [Command("MoveFrom", RunMode = RunMode.Async)]
         [Alias("MoveF")]
         [RequireUserPermission(GuildPermission.Administrator, Group = "user")]
         [RequireOwner(Group = "user")]
@@ -253,7 +256,8 @@ namespace InfiniBot
             {
                 m = await ReplyAsync(embed: Data.GetFeedbackEmbed().WithColor(Data.COLOR_ERROR).WithTitle("Move unsuccessful").WithDescription($"Could not find channel with id: `" + channel + "´. Please make sure you post a valid channel id.").Build());
             }
-            Data.tempMessages.Add(new TempMessage(m));
+            await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
+            await m.DeleteAsync();
         }
     }
 }

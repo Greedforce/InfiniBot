@@ -39,9 +39,7 @@ namespace InfiniBot
             COLOR_ERROR = new Color(255, 0, 0),
             COLOR_SUCCESS = new Color(0, 255, 0);
 
-
-
-        public static List<TempMessage> tempMessages = new List<TempMessage>();
+        
 
         public static Embed GetJoinEmbed(SocketGuild Guild)
         {
@@ -76,37 +74,6 @@ namespace InfiniBot
                 .WithFooter(EMBED_FOOTER_DELETE);
 
             return builder;
-        }
-    }
-
-    public class TempMessage
-    {
-        public IMessage message { get; set; }
-        public Timer timer { get; set; }
-
-        public TempMessage(IMessage message)
-        {
-            this.message = message;
-            timer = new Timer(Data.MESSAGE_DELETE_DELAY * 1000);
-            timer.AutoReset = false;
-            timer.Elapsed += ElapsedLifeSpan;
-            timer.Start();
-        }
-
-        public TempMessage(IMessage message, double lifeSpan)
-        {
-            this.message = message;
-            timer = new Timer(lifeSpan * 1000);
-            timer.AutoReset = false;
-            timer.Elapsed += ElapsedLifeSpan;
-            timer.Start();
-        }
-
-        private void ElapsedLifeSpan(object sender, ElapsedEventArgs e)
-        {
-            timer.Dispose();
-            message.DeleteAsync().GetAwaiter().GetResult();
-            Data.tempMessages.Remove(this);
         }
     }
 }
