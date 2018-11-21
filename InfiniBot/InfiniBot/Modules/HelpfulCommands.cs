@@ -26,7 +26,7 @@ namespace InfiniBot
                 #region Command and Module List
                 title = "Help - List";
 
-                List<CommandInfo> commandInfos = Bot.commands.Commands.Where(c => c.Module.Group == null).ToList();
+                List<CommandInfo> commandInfos = Program.MainForm.bot.commands.Commands.Where(c => c.Module.Group == null).ToList();
                 for (int i = 0; i < commandInfos.Count(); i++)
                 {
                     if ((await commandInfos[i].CheckPreconditionsAsync(Context)).IsSuccess &&
@@ -43,7 +43,7 @@ namespace InfiniBot
                 builder.AddField("Commands", toReturn);
                 toReturn = "";
 
-                List<ModuleInfo> moduleInfos = Bot.commands.Modules.Where(m => m.Group != null).ToList();
+                List<ModuleInfo> moduleInfos = Program.MainForm.bot.commands.Modules.Where(m => m.Group != null).ToList();
                 for (int i = 0; i < moduleInfos.Count(); i++)
                 {
                     if (moduleInfos[i].Commands.FirstOrDefault(c => c.CheckPreconditionsAsync(Context).GetAwaiter().GetResult().IsSuccess) != null &&
@@ -87,7 +87,7 @@ namespace InfiniBot
             }
             else
             {
-                ModuleInfo moduleInfo = Bot.commands.Modules.Where(m =>
+                ModuleInfo moduleInfo = Program.MainForm.bot.commands.Modules.Where(m =>
                 m.Group != null).FirstOrDefault(m => m.Group.ToLower() == commandOrModule.ToLower() ||
                 m.Aliases.FirstOrDefault(a => a.ToLower() == commandOrModule.ToLower()) != null);
                 if (moduleInfo != null)
@@ -136,19 +136,19 @@ namespace InfiniBot
                 }
                 else
                 {
-                    CommandInfo commandInfo = Bot.commands.Commands.FirstOrDefault(c =>
+                    CommandInfo commandInfo = Program.MainForm.bot.commands.Commands.FirstOrDefault(c =>
                     c.Name.ToLower() == commandOrModule.ToLower() ||
                     c.Aliases.FirstOrDefault(a => a.ToLower() == commandOrModule.ToLower()) != null);
                     if (commandInfo == null)
                     {
-                        commandInfo = Bot.commands.Commands.FirstOrDefault(c =>
+                        commandInfo = Program.MainForm.bot.commands.Commands.FirstOrDefault(c =>
                         (c.Module.Group + ' ' + c.Name).ToLower() == commandOrModule.ToLower() ||
                         c.Module.Aliases.FirstOrDefault(a => (a + ' ' + c.Name).ToLower() == commandOrModule.ToLower()) != null);
                         for (int i = 1; i < commandInfo.Aliases.Count; i++)
                         {
                             if (commandInfo == null)
                             {
-                                commandInfo = Bot.commands.Commands.FirstOrDefault(c =>
+                                commandInfo = Program.MainForm.bot.commands.Commands.FirstOrDefault(c =>
                                 (c.Module.Group + ' ' + commandInfo.Aliases[i]).ToLower() == commandOrModule.ToLower() ||
                                 c.Module.Aliases.FirstOrDefault(a => (a + ' ' + commandInfo.Aliases[i]).ToLower() == commandOrModule.ToLower()) != null);
                             }

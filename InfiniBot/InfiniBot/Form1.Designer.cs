@@ -34,10 +34,14 @@
             this.Source = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Message = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Exception = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.buttonView = new System.Windows.Forms.Button();
+            this.buttonConsoleView = new System.Windows.Forms.Button();
             this.buttonStartBot = new System.Windows.Forms.Button();
             this.buttonStopBot = new System.Windows.Forms.Button();
-            this.buttonClear = new System.Windows.Forms.Button();
+            this.buttonConsoleClear = new System.Windows.Forms.Button();
+            this.comboBoxToken = new System.Windows.Forms.ComboBox();
+            this.buttonTokenRemove = new System.Windows.Forms.Button();
+            this.groupBoxToken = new System.Windows.Forms.GroupBox();
+            this.groupBoxToken.SuspendLayout();
             this.SuspendLayout();
             // 
             // listViewConsole
@@ -50,7 +54,7 @@
             this.Exception});
             this.listViewConsole.FullRowSelect = true;
             this.listViewConsole.GridLines = true;
-            this.listViewConsole.Location = new System.Drawing.Point(13, 13);
+            this.listViewConsole.Location = new System.Drawing.Point(12, 69);
             this.listViewConsole.Name = "listViewConsole";
             this.listViewConsole.ShowItemToolTips = true;
             this.listViewConsole.Size = new System.Drawing.Size(640, 367);
@@ -81,19 +85,19 @@
             this.Exception.Text = "Exception";
             this.Exception.Width = 110;
             // 
-            // buttonView
+            // buttonConsoleView
             // 
-            this.buttonView.Location = new System.Drawing.Point(578, 386);
-            this.buttonView.Name = "buttonView";
-            this.buttonView.Size = new System.Drawing.Size(75, 23);
-            this.buttonView.TabIndex = 1;
-            this.buttonView.Text = "View";
-            this.buttonView.UseVisualStyleBackColor = true;
-            this.buttonView.Click += new System.EventHandler(this.buttonView_Click);
+            this.buttonConsoleView.Location = new System.Drawing.Point(658, 70);
+            this.buttonConsoleView.Name = "buttonConsoleView";
+            this.buttonConsoleView.Size = new System.Drawing.Size(75, 23);
+            this.buttonConsoleView.TabIndex = 1;
+            this.buttonConsoleView.Text = "View";
+            this.buttonConsoleView.UseVisualStyleBackColor = true;
+            this.buttonConsoleView.Click += new System.EventHandler(this.buttonConsoleView_Click);
             // 
             // buttonStartBot
             // 
-            this.buttonStartBot.Location = new System.Drawing.Point(13, 386);
+            this.buttonStartBot.Location = new System.Drawing.Point(658, 9);
             this.buttonStartBot.Name = "buttonStartBot";
             this.buttonStartBot.Size = new System.Drawing.Size(75, 23);
             this.buttonStartBot.TabIndex = 2;
@@ -104,7 +108,7 @@
             // buttonStopBot
             // 
             this.buttonStopBot.Enabled = false;
-            this.buttonStopBot.Location = new System.Drawing.Point(94, 386);
+            this.buttonStopBot.Location = new System.Drawing.Point(658, 38);
             this.buttonStopBot.Name = "buttonStopBot";
             this.buttonStopBot.Size = new System.Drawing.Size(75, 23);
             this.buttonStopBot.TabIndex = 3;
@@ -112,28 +116,59 @@
             this.buttonStopBot.UseVisualStyleBackColor = true;
             this.buttonStopBot.Click += new System.EventHandler(this.buttonStopBot_Click);
             // 
-            // buttonClear
+            // buttonConsoleClear
             // 
-            this.buttonClear.Location = new System.Drawing.Point(497, 386);
-            this.buttonClear.Name = "buttonClear";
-            this.buttonClear.Size = new System.Drawing.Size(75, 23);
-            this.buttonClear.TabIndex = 4;
-            this.buttonClear.Text = "Clear";
-            this.buttonClear.UseVisualStyleBackColor = true;
-            this.buttonClear.Click += new System.EventHandler(this.buttonClear_Click);
+            this.buttonConsoleClear.Location = new System.Drawing.Point(658, 99);
+            this.buttonConsoleClear.Name = "buttonConsoleClear";
+            this.buttonConsoleClear.Size = new System.Drawing.Size(75, 23);
+            this.buttonConsoleClear.TabIndex = 4;
+            this.buttonConsoleClear.Text = "Clear";
+            this.buttonConsoleClear.UseVisualStyleBackColor = true;
+            this.buttonConsoleClear.Click += new System.EventHandler(this.buttonConsoleClear_Click);
+            // 
+            // comboBoxToken
+            // 
+            this.comboBoxToken.FormattingEnabled = true;
+            this.comboBoxToken.Location = new System.Drawing.Point(15, 23);
+            this.comboBoxToken.Name = "comboBoxToken";
+            this.comboBoxToken.Size = new System.Drawing.Size(529, 21);
+            this.comboBoxToken.TabIndex = 5;
+            // 
+            // buttonTokenRemove
+            // 
+            this.buttonTokenRemove.Location = new System.Drawing.Point(550, 22);
+            this.buttonTokenRemove.Name = "buttonTokenRemove";
+            this.buttonTokenRemove.Size = new System.Drawing.Size(75, 23);
+            this.buttonTokenRemove.TabIndex = 7;
+            this.buttonTokenRemove.Text = "Remove";
+            this.buttonTokenRemove.UseVisualStyleBackColor = true;
+            this.buttonTokenRemove.Click += new System.EventHandler(this.buttonTokenRemove_Click);
+            // 
+            // groupBoxToken
+            // 
+            this.groupBoxToken.Controls.Add(this.comboBoxToken);
+            this.groupBoxToken.Controls.Add(this.buttonTokenRemove);
+            this.groupBoxToken.Location = new System.Drawing.Point(12, 3);
+            this.groupBoxToken.Name = "groupBoxToken";
+            this.groupBoxToken.Size = new System.Drawing.Size(640, 60);
+            this.groupBoxToken.TabIndex = 8;
+            this.groupBoxToken.TabStop = false;
+            this.groupBoxToken.Text = "Token";
             // 
             // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(839, 419);
-            this.Controls.Add(this.buttonClear);
+            this.ClientSize = new System.Drawing.Size(744, 447);
+            this.Controls.Add(this.groupBoxToken);
+            this.Controls.Add(this.buttonConsoleClear);
             this.Controls.Add(this.buttonStopBot);
             this.Controls.Add(this.buttonStartBot);
-            this.Controls.Add(this.buttonView);
+            this.Controls.Add(this.buttonConsoleView);
             this.Controls.Add(this.listViewConsole);
             this.Name = "Form";
             this.Text = "InfiniBot";
+            this.groupBoxToken.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -146,10 +181,13 @@
         private System.Windows.Forms.ColumnHeader Source;
         private System.Windows.Forms.ColumnHeader Message;
         private System.Windows.Forms.ColumnHeader Exception;
-        private System.Windows.Forms.Button buttonView;
+        private System.Windows.Forms.Button buttonConsoleView;
         private System.Windows.Forms.Button buttonStartBot;
         private System.Windows.Forms.Button buttonStopBot;
-        private System.Windows.Forms.Button buttonClear;
+        private System.Windows.Forms.Button buttonConsoleClear;
+        private System.Windows.Forms.ComboBox comboBoxToken;
+        private System.Windows.Forms.Button buttonTokenRemove;
+        private System.Windows.Forms.GroupBox groupBoxToken;
     }
 }
 
