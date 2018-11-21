@@ -15,8 +15,6 @@ namespace InfiniBot
     class Data
     {
         public const string
-            BOT_TOKEN = "MjM4Mjc5ODk5Njg3ODEzMTIw.DZ2xkQ.BD2lwvSIuDVgm1shvqiQcLJG7c4",//InfiniBot Token
-            TEST_BOT_TOKEN = "MjE5NDU4NDQyMTc0MTM2MzMw.DXnfxg.zghdN6Te1WHqM_77EHF0914c5as",//DiscordTestBot Token
             BOT_PREFIX = "!",
             FILE_PATH = "BotFiles\\",
             TOKEN_PATH = "token.json",
