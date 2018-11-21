@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,16 +8,16 @@ using System.Timers;
 
 using Discord;
 using Discord.WebSocket;
+using Newtonsoft.Json;
 
 namespace InfiniBot
 {
     class Data
     {
         public const string
-            BOT_TOKEN = "MjM4Mjc5ODk5Njg3ODEzMTIw.DZ2xkQ.BD2lwvSIuDVgm1shvqiQcLJG7c4",//InfiniBot Token
-            TEST_BOT_TOKEN = "MjE5NDU4NDQyMTc0MTM2MzMw.DXnfxg.zghdN6Te1WHqM_77EHF0914c5as",//DiscordTestBot Token
             BOT_PREFIX = "!",
             FILE_PATH = "BotFiles\\",
+            TOKEN_PATH = "token.json",
             REQUESTS_AWAITING_APPROVAL_FILE_NAME = "RequestsAwaitingApproval.txt",
             URL_IMAGE_INFINITY_GAMING = "https://i.imgur.com/hQR0KSE.png",
             URL_ERROR_ICON = "https://i.imgur.com/HSrsLjE.png",
@@ -41,7 +42,47 @@ namespace InfiniBot
 
 
 
-        public static List<TempMessage> tempMessages = new List<TempMessage>();
+        public static List<TokenContainer> GetTokens()
+        {
+            if (!File.Exists(TOKEN_PATH))
+            {
+                FileStream fs = File.Create(TOKEN_PATH);
+                fs.Close();
+                fs.Dispose();
+            }
+            string inputJson = File.ReadAllText(TOKEN_PATH);
+
+            List<TokenContainer> tokenContainers = JsonConvert.DeserializeObject<List<TokenContainer>>(inputJson);
+            if(tokenContainers != null)
+            {
+                return tokenContainers;
+            }
+            else
+            {
+                return new List<TokenContainer>();
+            }
+        }
+
+        public static void AddToken(TokenContainer tokenContainer)
+        {
+            List<TokenContainer> tokenContainers = GetTokens();
+
+            tokenContainers.Add(tokenContainer);
+
+            string outputJson = JsonConvert.SerializeObject(tokenContainers, Formatting.Indented);
+            File.WriteAllText(TOKEN_PATH, outputJson);
+        }
+
+        public static void RemoveToken(TokenContainer tokenContainer)
+        {
+            List<TokenContainer> tokenContainers = GetTokens();
+
+            var tc = tokenContainers.FirstOrDefault(x => x.name == tokenContainer.name);
+            tokenContainers.Remove(tc);
+
+            string outputJson = JsonConvert.SerializeObject(tokenContainers, Formatting.Indented);
+            File.WriteAllText(TOKEN_PATH, outputJson);
+        }
 
         public static Embed GetJoinEmbed(SocketGuild Guild)
         {
@@ -76,37 +117,6 @@ namespace InfiniBot
                 .WithFooter(EMBED_FOOTER_DELETE);
 
             return builder;
-        }
-    }
-
-    public class TempMessage
-    {
-        public IMessage message { get; set; }
-        public Timer timer { get; set; }
-
-        public TempMessage(IMessage message)
-        {
-            this.message = message;
-            timer = new Timer(Data.MESSAGE_DELETE_DELAY * 1000);
-            timer.AutoReset = false;
-            timer.Elapsed += ElapsedLifeSpan;
-            timer.Start();
-        }
-
-        public TempMessage(IMessage message, double lifeSpan)
-        {
-            this.message = message;
-            timer = new Timer(lifeSpan * 1000);
-            timer.AutoReset = false;
-            timer.Elapsed += ElapsedLifeSpan;
-            timer.Start();
-        }
-
-        private void ElapsedLifeSpan(object sender, ElapsedEventArgs e)
-        {
-            timer.Dispose();
-            message.DeleteAsync().GetAwaiter().GetResult();
-            Data.tempMessages.Remove(this);
         }
     }
 }

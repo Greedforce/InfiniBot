@@ -18,13 +18,13 @@ namespace InfiniBot
     {
         public static Random rng = new Random();
 
-        private DiscordSocketClient _client;
-        public static CommandService commands;
+        public DiscordSocketClient client;
+        public CommandService commands;
         private IServiceProvider _services;
 
-        public async Task RunBotAsync()
+        public async Task RunBotAsync(string token)
         {
-            _client = new DiscordSocketClient(new DiscordSocketConfig
+            client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 WebSocketProvider = WS4NetProvider.Instance
             });
@@ -32,41 +32,41 @@ namespace InfiniBot
             commands = new CommandService();
 
             _services = new ServiceCollection()
-                .AddSingleton(_client)
+                .AddSingleton(client)
                 .AddSingleton(commands)
                 .BuildServiceProvider();
 
             //Event subscriptions
-            _client.Log += Program.MainForm.Log;
+            client.Log += Program.MainForm.Log;
             commands.Log += Program.MainForm.Log;
             commands.CommandExecuted += CommandExecuted;
-            _client.UserJoined += UserJoined;
+            client.UserJoined += UserJoined;
 
             await RegisterCommandsAsync();
+            
+            await client.LoginAsync(TokenType.Bot, token);
+            await client.SetGameAsync($"{Data.BOT_PREFIX}help for commands");
 
-            await _client.LoginAsync(TokenType.Bot, Data.TEST_BOT_TOKEN);
-            await _client.SetGameAsync($"{Data.BOT_PREFIX}help for commands");
-
-            await _client.StartAsync();
+            await client.StartAsync();
         }
 
         public async Task StopBotAsync()
         {
-            if (_client != null)
+            if (client != null)
             {
-                if (_client.LoginState == LoginState.LoggedIn)
+                if (client.LoginState == LoginState.LoggedIn)
                 {
-                    await _client.LogoutAsync();
-                    await _client.StopAsync();
+                    await client.LogoutAsync();
+                    await client.StopAsync();
                 }
             }
         }
 
         public bool IsActive()
         {
-            if (_client != null)
+            if (client != null)
             {
-                return _client.LoginState == LoginState.LoggedIn;
+                return client.LoginState == LoginState.LoggedIn;
             }
             return false;
         }
@@ -95,7 +95,7 @@ namespace InfiniBot
 
         public async Task RegisterCommandsAsync()
         {
-            _client.MessageReceived += HandleMessageAsync;
+            client.MessageReceived += HandleMessageAsync;
 
             await commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
         }
@@ -111,9 +111,9 @@ namespace InfiniBot
 
             int argPos = 0;
 
-            if (message.HasStringPrefix(Data.BOT_PREFIX, ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos))
+            if (message.HasStringPrefix(Data.BOT_PREFIX, ref argPos) || message.HasMentionPrefix(client.CurrentUser, ref argPos))
             {
-                SocketCommandContext context = new SocketCommandContext(_client, message);
+                SocketCommandContext context = new SocketCommandContext(client, message);
 
                 IResult result = await commands.ExecuteAsync(context, argPos, _services);
 

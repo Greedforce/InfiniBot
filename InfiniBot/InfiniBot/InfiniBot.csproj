@@ -143,6 +143,7 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -163,19 +164,21 @@
   <ItemGroup>
     <Compile Include="Bot.cs" />
     <Compile Include="Data.cs" />
+    <Compile Include="Attribute\ExampleAttribute.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="HideAttribute.cs" />
+    <Compile Include="Attribute\HideAttribute.cs" />
     <Compile Include="Modules\AdminCommands.cs" />
     <Compile Include="Modules\BotPropertyCommands.cs" />
     <Compile Include="Modules\HelpfulCommands.cs" />
     <Compile Include="Modules\MessageManagementCommands.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TokenContainer.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
