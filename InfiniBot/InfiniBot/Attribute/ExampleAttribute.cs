@@ -2,7 +2,7 @@
 
 namespace InfiniBot
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Parameter, AllowMultiple = true, Inherited = true)]
     public class ExampleAttribute : Attribute
     {
         private string example;
