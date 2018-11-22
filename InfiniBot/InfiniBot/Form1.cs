@@ -101,34 +101,12 @@ namespace InfiniBot
                     Data.AddToken(comboBoxToken.Text);
                 }*/
                 string token = comboBoxToken.Text;
-                bool newToken = false;
                 TokenContainer tc = Data.GetTokens().FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text);
                 if(tc != null)
                 {
                     token = tc.token;
                 }
-                else
-                {
-                    newToken = true;
-                }
                 await bot.RunBotAsync(token);
-                buttonStartBot.Enabled = false;
-                buttonStopBot.Enabled = true;
-
-                if(newToken)
-                {
-                    await Task.Delay(3000);
-                    try
-                    {
-                        Data.AddToken(new TokenContainer(bot.client.CurrentUser.Username, token));
-                        comboBoxToken.Items.Add(bot.client.CurrentUser.Username);
-                        comboBoxToken.Text = bot.client.CurrentUser.Username;
-                    }
-                    catch
-                    {
-                        MessageBox.Show("Something went wrong while trying to add the token to the list.", "ERROR: Could not add token");
-                    }
-                }
             }
             else
             {
@@ -139,24 +117,40 @@ namespace InfiniBot
         private async void buttonStopBot_Click(object sender, EventArgs e)
         {
             await bot.StopBotAsync();
-            buttonStopBot.Enabled = false;
-            buttonStartBot.Enabled = true;
         }
 
-        public async Task ToggleBot()
+        public Task BotLoggedIn()
         {
-            if (bot.IsActive())
+            Invoke((Action)delegate
             {
-                await bot.StopBotAsync();
-                buttonStopBot.Enabled = false;
-                buttonStartBot.Enabled = true;
-            }
-            else
-            {
-                await bot.RunBotAsync(comboBoxToken.Text);
                 buttonStartBot.Enabled = false;
                 buttonStopBot.Enabled = true;
-            }
+
+                if (Data.GetTokens().FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text) == null)
+                {
+                    try
+                    {
+                        Data.AddToken(new TokenContainer(bot.client.CurrentUser.Username, comboBoxToken.Text));
+                        comboBoxToken.Items.Add(bot.client.CurrentUser.Username);
+                        comboBoxToken.Text = bot.client.CurrentUser.Username;
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Something went wrong while trying to add the token to the list.", "ERROR: Could not add token");
+                    }
+                }
+            });
+            return Task.CompletedTask;
+        }
+
+        public Task BotLoggedOut()
+        {
+            Invoke((Action)delegate
+            {
+                buttonStopBot.Enabled = false;
+                buttonStartBot.Enabled = true;
+            });
+            return Task.CompletedTask;
         }
 
         // Compiles a message with the information from the selected listView item and displays it to the user.

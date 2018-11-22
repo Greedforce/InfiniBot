@@ -20,7 +20,7 @@ namespace InfiniBot
             await Context.Message.DeleteAsync();
             await ReplyAsync(embed: new EmbedBuilder().WithColor(Data.COLOR_BOT).WithTitle("Shutting down").WithDescription($"Reason: {reason}").Build());
             Thread.Sleep(1000);
-            await Program.MainForm.ToggleBot();
+            await Program.MainForm.bot.StopBotAsync();
         }
 
         [Command("Say", RunMode = RunMode.Async)]

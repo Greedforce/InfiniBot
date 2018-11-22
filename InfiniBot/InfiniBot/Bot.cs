@@ -11,6 +11,7 @@ using Discord;
 using Discord.Commands;
 using Discord.Net.Providers.WS4Net;
 using Discord.WebSocket;
+using System.Windows.Forms;
 
 namespace InfiniBot
 {
@@ -41,13 +42,22 @@ namespace InfiniBot
             commands.Log += Program.MainForm.Log;
             commands.CommandExecuted += CommandExecuted;
             client.UserJoined += UserJoined;
+            client.LoggedIn += Program.MainForm.BotLoggedIn;
+            client.LoggedOut += Program.MainForm.BotLoggedOut;
 
             await RegisterCommandsAsync();
-            
-            await client.LoginAsync(TokenType.Bot, token);
-            await client.SetGameAsync($"{Data.BOT_PREFIX}help for commands");
 
-            await client.StartAsync();
+            try
+            {
+                await client.LoginAsync(TokenType.Bot, token);
+                await client.SetGameAsync($"{Data.BOT_PREFIX}help for commands");
+
+                await client.StartAsync();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Something went wrong while trying to connect to the bot account.\n\nException:\n{e}", "ERROR: Could not connect");
+            }
         }
 
         public async Task StopBotAsync()
