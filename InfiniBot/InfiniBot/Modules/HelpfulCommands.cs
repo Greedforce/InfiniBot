@@ -14,7 +14,11 @@ namespace InfiniBot
     {
         [Command("Help", RunMode = RunMode.Async)]
         [Summary("Provides information on a specific command or module, or a list of all available commands and modules, if no parameter is provided.")]
-        public async Task SendHelpAsync([Summary("The name of a command or module")][Remainder]string commandOrModule = "")
+        public async Task SendHelpAsync(
+            [Summary("The name of a command or module")]
+            [Example("Join")]
+            [Remainder]
+            string commandOrModule = "")
         {
             EmbedBuilder builder = new EmbedBuilder();
             string
@@ -30,7 +34,7 @@ namespace InfiniBot
                 for (int i = 0; i < commandInfos.Count(); i++)
                 {
                     if ((await commandInfos[i].CheckPreconditionsAsync(Context)).IsSuccess &&
-                        commandInfos[i].Attributes.FirstOrDefault(a => a is HideAttribute) == null)
+                        commandInfos[i].Attributes.FirstOrDefault(a => a is HiddenAttribute) == null)
                     {
                         if (i > 0)
                         {
@@ -47,42 +51,16 @@ namespace InfiniBot
                 for (int i = 0; i < moduleInfos.Count(); i++)
                 {
                     if (moduleInfos[i].Commands.FirstOrDefault(c => c.CheckPreconditionsAsync(Context).GetAwaiter().GetResult().IsSuccess) != null &&
-                        moduleInfos[i].Attributes.FirstOrDefault(a => a is HideAttribute) == null)
+                        moduleInfos[i].Attributes.FirstOrDefault(a => a is HiddenAttribute) == null)
                     {
-                        /*if ((toReturn + "\n**" + m.Group + "**").Length > Data.CHAR_LIMIT)
-                        {
-                            await Context.User.SendMessageAsync(toReturn);
-                            toReturn += "**" + m.Group + "**";
-                        }
-                        else
-                        {
-                            toReturn += "\n**" + m.Group + "**";
-                        }*/
                         if (i > 0)
                         {
                             toReturn += ", ";
                         }
                         toReturn += '`' + moduleInfos[i].Group + '`';
-
-                        /*foreach (var c in m.Commands)
-                        {
-                            if ((await c.CheckPreconditionsAsync(Context)).IsSuccess &&
-                                c.Attributes.FirstOrDefault(a => a is HideAttribute) == null)
-                            {
-                                if ((toReturn + "\n-" + c.Name).Length > Data.CHAR_LIMIT)
-                                {
-                                    await Context.User.SendMessageAsync(toReturn);
-                                    toReturn = "-" + c.Name;
-                                }
-                                else
-                                {
-                                    toReturn += "\n-" + c.Name;
-                                }
-                            }
-                        }*/
                     }
                 }
-                await Context.User.SendMessageAsync("", embed: builder.WithColor(Data.COLOR_BOT).WithTitle(title).AddField("Modules*", toReturn).WithFooter("*Modules contain sub-commands.").Build());
+                await Context.User.SendMessageAsync(embed: builder.WithColor(Data.COLOR_BOT).WithTitle(title).AddField("Modules*", toReturn).WithFooter("*Modules contain sub-commands.").Build());
                 #endregion
             }
             else
@@ -129,7 +107,16 @@ namespace InfiniBot
                     {
                         toReturn += "`None`";
                     }
-                    toReturn += "\n\n**Usage**:\n" + Data.BOT_PREFIX + moduleInfo.Group + " <command> (command parameters)";
+                    toReturn += "\n\n**Syntax**:\n" + Data.BOT_PREFIX + moduleInfo.Group + " <command> (command parameters)";
+                    toReturn += "\n\n**Example**:\n" + Data.BOT_PREFIX + moduleInfo.Group + " " + moduleInfo.Commands.FirstOrDefault().Name;
+                    foreach (var p in moduleInfo.Commands.FirstOrDefault().Parameters)
+                    {
+                        ExampleAttribute exA = p.Attributes.FirstOrDefault(a => a is ExampleAttribute) as ExampleAttribute;
+                        if(exA!=null)
+                        {
+                            toReturn += " " + exA.Example;
+                        }
+                    }
 
                     await Context.User.SendMessageAsync("", embed: builder.WithColor(Data.COLOR_BOT).WithTitle(title).WithDescription(toReturn).WithFooter("<> = required parameter, () = depends on the command in question").Build());
                     #endregion
@@ -162,11 +149,6 @@ namespace InfiniBot
                     if (commandInfo != null)
                     {
                         #region Command Help
-                        //toReturn = "**" + commandInfo.Name + "**";
-                        //toReturn += "\n" + commandInfo.Summary;
-
-                        //toReturn = commandInfo.Summary;
-
                         toReturn += "\n**Name**: `" + commandInfo.Name + "`";
                         toReturn += "\n**Aliases**: ";
                         if (commandInfo.Aliases.Count > 1)
@@ -198,12 +180,12 @@ namespace InfiniBot
                         toReturn += "\n**Description**\n`" + commandInfo.Summary + "`";
                         toReturn += "\n**Permission required**: " + GetPreconditionsAsString(commandInfo.Preconditions);
                         toReturn += "\n**Parameters**: ";
-                        string example = Data.BOT_PREFIX;
+                        string syntax = Data.BOT_PREFIX;
                         if (commandInfo.Module.Group != null)
                         {
-                            example += commandInfo.Module.Group + ' ';
+                            syntax += commandInfo.Module.Group + ' ';
                         }
-                        example += commandInfo.Name;
+                        syntax += commandInfo.Name;
                         if (commandInfo.Parameters.Count > 0)
                         {
                             foreach (var p in commandInfo.Parameters)
@@ -213,11 +195,11 @@ namespace InfiniBot
                                 {
                                     toReturn += " (Optional)";
 
-                                    example += " [" + p.Name + "]";
+                                    syntax += " [" + p.Name + "]";
                                 }
                                 else
                                 {
-                                    example += " <" + p.Name + ">";
+                                    syntax += " <" + p.Name + ">";
                                 }
                                 if (!string.IsNullOrEmpty(p.Summary) && !string.IsNullOrWhiteSpace(p.Summary))
                                 {
@@ -229,8 +211,44 @@ namespace InfiniBot
                         {
                             toReturn += "\n`None`";
                         }
-                        toReturn += "\n\n**Usage**:\n" + example;
-                        await Context.User.SendMessageAsync("", embed: builder.WithColor(Data.COLOR_BOT).WithTitle(title).WithDescription(toReturn).WithFooter("<> = required parameter, [] = optional parameter").Build());
+                        toReturn += $"\n\n**Syntax**:\n`{syntax}`";
+
+                        string exampleBase = Data.BOT_PREFIX;
+                        if (commandInfo.Module.Group != null)
+                        {
+                            exampleBase += commandInfo.Module.Group + ' ';
+                        }
+                        exampleBase += commandInfo.Name;
+
+                        toReturn += "\n\n**Example**:";
+                        List<Attribute>[] paramAttributes = new List<Attribute>[commandInfo.Parameters.Count];
+                        int mostExamples = 0;
+                        for (int i = 0; i < commandInfo.Parameters.Count; i++)
+                        {
+                            paramAttributes[i] = commandInfo.Parameters[i].Attributes.Where(a => a is ExampleAttribute).ToList();
+                            if (mostExamples < paramAttributes[i].Count)
+                            {
+                                mostExamples = paramAttributes[i].Count;
+                            }
+                        }
+
+                        for (int i = 0; i < mostExamples; i++)
+                        {
+                            toReturn += "\n`" + exampleBase;
+                            foreach (List<Attribute> pl in paramAttributes)
+                            {
+                                if(pl.Count > i)
+                                {
+                                    toReturn += " " + (pl[i] as ExampleAttribute).Example;
+                                }
+                                else
+                                {
+                                    toReturn += " " + (pl.LastOrDefault() as ExampleAttribute).Example;
+                                }
+                            }
+                            toReturn += "`";
+                        }
+                        await Context.User.SendMessageAsync("", embed: builder.WithColor(Data.COLOR_BOT).WithTitle(title).WithDescription(toReturn).WithFooter("<> = required parameter, [] = optional parameter\n(brackets should not be included when using the command)").Build());
                         #endregion
                     }
                     else
@@ -248,7 +266,9 @@ namespace InfiniBot
         [Alias("R")]
         [Summary("Rolls the specified dice and displays the result.")]
         public async Task RollDice(
-            [Summary("The dice you wish to roll, following the format of \"<nr of dice>d<sides of the dice>+modifier\"")]string input)
+            [Summary("The dice you wish to roll, following the format of \"<nr of dice>d<sides of the dice>+modifier\"")]
+            [Example("2d6+1")]
+            string input)
         {
             await Context.Message.DeleteAsync();
             string toReturn = "Roll: " + input + "\n";
@@ -309,8 +329,14 @@ namespace InfiniBot
         [Command("Group", RunMode = RunMode.Async)]
         [Alias("G")]
         [Summary("Takes the given objects and splits them into the specified number of groups.")]
-        public async Task SplitMembersIntoGroups([Summary("The number of groups you wish to divide the objects into.")]int groups,
-            [Summary("The objects you wish to divide, separated by spaces.")][Remainder]string objects)
+        public async Task SplitMembersIntoGroups(
+            [Summary("The number of groups you wish to divide the objects into.")]
+            [Example("2")]
+            int groups,
+            [Summary("The objects you wish to divide, separated by spaces.")]
+            [Example("apple pear orange banana")]
+            [Remainder]
+            string objects)
         {
             await Context.Message.DeleteAsync();
             string toReturn = "";

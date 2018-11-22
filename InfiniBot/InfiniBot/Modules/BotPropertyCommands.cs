@@ -14,7 +14,10 @@ namespace InfiniBot
         [Command("Nickname", RunMode = RunMode.Async)]
         [RequireUserPermission(GuildPermission.ChangeNickname, Group = "user")]
         [RequireOwner(Group = "user")]
-        public async Task ChangeBotNicknameAsync([Remainder]string nickName)
+        public async Task ChangeBotNicknameAsync(
+            [Remainder]
+            [Example("DiscordBot1337")]
+            string nickName)
         {
             await Context.Message.DeleteAsync();
             await Context.Guild.GetUser(Context.Client.CurrentUser.Id).ModifyAsync(u => u.Nickname = nickName);
@@ -25,7 +28,10 @@ namespace InfiniBot
 
         [Command("Username", RunMode = RunMode.Async)]
         [RequireOwner]
-        public async Task ChangeBotUsernameAsync([Remainder]string userName)
+        public async Task ChangeBotUsernameAsync(
+            [Remainder]
+            [Example("DiscordBot1337")]
+            string userName)
         {
             await Context.Message.DeleteAsync();
             await Context.Client.CurrentUser.ModifyAsync(u => u.Username = userName);
@@ -36,7 +42,10 @@ namespace InfiniBot
 
         [Command("Game", RunMode = RunMode.Async)]
         [RequireOwner]
-        public async Task ChangeBotGameAsync([Remainder]string game)
+        public async Task ChangeBotGameAsync(
+            [Remainder]
+            [Example("Overwatch")]
+            string game)
         {
             await Context.Message.DeleteAsync();
             await Context.Client.SetGameAsync(game);

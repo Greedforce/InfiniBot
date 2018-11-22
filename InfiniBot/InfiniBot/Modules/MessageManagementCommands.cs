@@ -19,8 +19,12 @@ namespace InfiniBot
         [RequireOwner(Group = "user")]
         [Summary("Deletes the last x messages sent in the text channel.")]
         public async Task PruneMessagesAsync(
-            [Summary("How many messages you want to delete.")]int amount,
-            [Summary("How many messages you want to skip before starting to delete.")]int skip = 0)
+            [Summary("How many messages you want to delete.")]
+            [Example("10")]
+            int amount,
+            [Summary("How many messages you want to skip before starting to delete.")]
+            [Example("2")]
+            int skip = 0)
         {
             await Context.Message.DeleteAsync();
             List<IMessage> messages;
@@ -56,8 +60,12 @@ namespace InfiniBot
         [RequireOwner(Group = "user")]
         [Summary("Deletes the last x messages sent in the text channel.")]
         public async Task PruneFromMessageAsync(
-            [Summary("The message you want to delete from.")]ulong messageID,
-            [Summary("How many messages you want to skip before starting to delete.")]int skip = 0)
+            [Summary("The id of the message you want to delete from.")]
+            [Example("515268392219967498")]
+            ulong messageID,
+            [Summary("How many messages you want to skip before starting to delete.")]
+            [Example("2")]
+            int skip = 0)
         {
             await Context.Message.DeleteAsync();
             List<IMessage> messages = new List<IMessage>();
@@ -87,9 +95,16 @@ namespace InfiniBot
         [RequireOwner(Group = "user")]
         [Summary("Moves a specified amount of messages, after another specified amount of messages, sent in the text channel to another channel provided by id or tag.")]
         public async Task MoveMessagesAsync(
-            [Summary("How many messages you want to move.")]int amount,
-            [Summary("The channel you wish to move the messages to")]string channel,
-            [Summary("How many messages you want to skip before starting to move.")]int skip = 0)
+            [Summary("How many messages you want to move.")]
+            [Example("10")]
+            int amount,
+            [Summary("The channel (mention or id) you wish to move the messages to")]
+            [Example("#general")]
+            [Example("238253605784649728")]
+            string channel,
+            [Summary("How many messages you want to skip before starting to move.")]
+            [Example("2")]
+            int skip = 0)
         {
             await Context.Message.DeleteAsync();
             IUserMessage m;
@@ -179,9 +194,16 @@ namespace InfiniBot
         [RequireOwner(Group = "user")]
         [Summary("Moves a specified amount of messages, after another specified amount of messages, sent in the text channel to another channel provided by id or tag.")]
         public async Task MoveFromMessageAsync(
-            [Summary("The message you want to move from.")]ulong messageID,
-            [Summary("The channel you wish to move the messages to")]string channel,
-            [Summary("How many messages you want to skip before starting to move.")]int skip = 0)
+            [Summary("The id of the message you want to move from.")]
+            [Example("515268392219967498")]
+            ulong messageID,
+            [Summary("The channel (mention or id) you wish to move the messages to")]
+            [Example("#general")]
+            [Example("238253605784649728")]
+            string channel,
+            [Summary("How many messages you want to skip before starting to move.")]
+            [Example("2")]
+            int skip = 0)
         {
             await Context.Message.DeleteAsync();
             IUserMessage m;
