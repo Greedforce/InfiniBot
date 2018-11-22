@@ -19,6 +19,13 @@ namespace InfiniBot
         public Form()
         {
             InitializeComponent();
+            List<TokenContainer> tokenContainers = Data.GetTokens();
+            string[] names = new string[tokenContainers.Count];
+            for (int i = 0; i < tokenContainers.Count; i++)
+            {
+                names[i] = tokenContainers[i].name;
+            }
+            comboBoxToken.Items.AddRange(names);
         }
 
         public Task Log(LogMessage message)
@@ -83,8 +90,71 @@ namespace InfiniBot
             return Task.CompletedTask;
         }
 
+        private async void buttonStartBot_Click(object sender, EventArgs e)
+        {
+            if(!string.IsNullOrEmpty(comboBoxToken.Text))
+            {
+                /*
+                if(!comboBoxToken.Items.Contains(comboBoxToken.Text))
+                {
+                    comboBoxToken.Items.Add(comboBoxToken.Text);
+                    Data.AddToken(comboBoxToken.Text);
+                }*/
+                string token = comboBoxToken.Text;
+                TokenContainer tc = Data.GetTokens().FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text);
+                if(tc != null)
+                {
+                    token = tc.token;
+                }
+                await bot.RunBotAsync(token);
+            }
+            else
+            {
+                MessageBox.Show("Please pick a token before starting the bot", "ERROR: Missing token!");
+            }
+        }
+
+        private async void buttonStopBot_Click(object sender, EventArgs e)
+        {
+            await bot.StopBotAsync();
+        }
+
+        public Task BotLoggedIn()
+        {
+            Invoke((Action)delegate
+            {
+                buttonStartBot.Enabled = false;
+                buttonStopBot.Enabled = true;
+
+                if (Data.GetTokens().FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text) == null)
+                {
+                    try
+                    {
+                        Data.AddToken(new TokenContainer(bot.client.CurrentUser.Username, comboBoxToken.Text));
+                        comboBoxToken.Items.Add(bot.client.CurrentUser.Username);
+                        comboBoxToken.Text = bot.client.CurrentUser.Username;
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Something went wrong while trying to add the token to the list.", "ERROR: Could not add token");
+                    }
+                }
+            });
+            return Task.CompletedTask;
+        }
+
+        public Task BotLoggedOut()
+        {
+            Invoke((Action)delegate
+            {
+                buttonStopBot.Enabled = false;
+                buttonStartBot.Enabled = true;
+            });
+            return Task.CompletedTask;
+        }
+
         // Compiles a message with the information from the selected listView item and displays it to the user.
-        private void buttonView_Click(object sender, EventArgs e)
+        private void buttonConsoleView_Click(object sender, EventArgs e)
         {
             if (listViewConsole.SelectedItems.Count > 0)
             {
@@ -118,39 +188,31 @@ namespace InfiniBot
             }
         }
 
-        private async void buttonStartBot_Click(object sender, EventArgs e)
+        private void buttonConsoleClear_Click(object sender, EventArgs e)
         {
-            await bot.RunBotAsync();
-            buttonStartBot.Enabled = false;
-            buttonStopBot.Enabled = true;
+            listViewConsole.Items.Clear();
         }
 
-        public async Task ToggleBot()
+        private void buttonTokenRemove_Click(object sender, EventArgs e)
         {
-            if (bot.IsActive())
+            if (!string.IsNullOrEmpty(comboBoxToken.Text))
             {
-                await bot.StopBotAsync();
-                buttonStopBot.Enabled = false;
-                buttonStartBot.Enabled = true;
+                TokenContainer tc = Data.GetTokens().FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text);
+                if (tc != null)
+                {
+                    Data.RemoveToken(tc);
+                    comboBoxToken.Items.Remove(comboBoxToken.Text);
+                    comboBoxToken.Text = "";
+                }
+                else
+                {
+                    MessageBox.Show("The token you entered does not exist.", "ERROR: Could not find token!");
+                }
             }
             else
             {
-                await bot.RunBotAsync();
-                buttonStartBot.Enabled = false;
-                buttonStopBot.Enabled = true;
+                MessageBox.Show("You need to select a token before using this button.", "ERROR: Missing token!");
             }
-        }
-
-        private async void buttonStopBot_Click(object sender, EventArgs e)
-        {
-            await bot.StopBotAsync();
-            buttonStopBot.Enabled = false;
-            buttonStartBot.Enabled = true;
-        }
-
-        private void buttonClear_Click(object sender, EventArgs e)
-        {
-            listViewConsole.Items.Clear();
         }
     }
 }
