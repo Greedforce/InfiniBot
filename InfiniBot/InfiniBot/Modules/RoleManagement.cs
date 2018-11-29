@@ -304,21 +304,7 @@ namespace InfiniBot.Modules
             {
                 bool joinable = false;
                 RoleType roleType = RoleType.Other;
-                if (sr.Permissions.Administrator ||
-                    sr.Permissions.BanMembers ||
-                    sr.Permissions.DeafenMembers ||
-                    sr.Permissions.KickMembers ||
-                    sr.Permissions.ManageChannels ||
-                    sr.Permissions.ManageEmojis ||
-                    sr.Permissions.ManageGuild ||
-                    sr.Permissions.ManageMessages ||
-                    sr.Permissions.ManageNicknames ||
-                    sr.Permissions.ManageRoles ||
-                    sr.Permissions.ManageWebhooks ||
-                    sr.Permissions.MentionEveryone ||
-                    sr.Permissions.MoveMembers ||
-                    sr.Permissions.MuteMembers ||
-                    sr.Permissions.PrioritySpeaker)
+                if (Data.HasAdministrativePermission(sr))
                 {
                     joinable = false;
                     roleType = RoleType.Admin;

@@ -54,6 +54,44 @@ namespace InfiniBot
         
 
         
+        public static bool HasAdministrativePermission(SocketRole socketRole)
+        {
+            return socketRole.Permissions.Administrator ||
+                socketRole.Permissions.BanMembers ||
+                socketRole.Permissions.DeafenMembers ||
+                socketRole.Permissions.KickMembers ||
+                socketRole.Permissions.ManageChannels ||
+                socketRole.Permissions.ManageEmojis ||
+                socketRole.Permissions.ManageGuild ||
+                socketRole.Permissions.ManageMessages ||
+                socketRole.Permissions.ManageNicknames ||
+                socketRole.Permissions.ManageRoles ||
+                socketRole.Permissions.ManageWebhooks ||
+                socketRole.Permissions.MentionEveryone ||
+                socketRole.Permissions.MoveMembers ||
+                socketRole.Permissions.MuteMembers ||
+                socketRole.Permissions.PrioritySpeaker;
+        }
+
+        public static bool ReceivedAdministrativePermission(SocketRole prevSocketRole, SocketRole socketRole)
+        {
+            return (!prevSocketRole.Permissions.Administrator && socketRole.Permissions.Administrator) ||
+                    (!prevSocketRole.Permissions.BanMembers && socketRole.Permissions.BanMembers) ||
+                    (!prevSocketRole.Permissions.DeafenMembers && socketRole.Permissions.DeafenMembers) ||
+                    (!prevSocketRole.Permissions.KickMembers && socketRole.Permissions.KickMembers) ||
+                    (!prevSocketRole.Permissions.ManageChannels && socketRole.Permissions.ManageChannels) ||
+                    (!prevSocketRole.Permissions.ManageEmojis && socketRole.Permissions.ManageEmojis) ||
+                    (!prevSocketRole.Permissions.ManageGuild && socketRole.Permissions.ManageGuild) ||
+                    (!prevSocketRole.Permissions.ManageMessages && socketRole.Permissions.ManageMessages) ||
+                    (!prevSocketRole.Permissions.ManageNicknames && socketRole.Permissions.ManageNicknames) ||
+                    (!prevSocketRole.Permissions.ManageRoles && socketRole.Permissions.ManageRoles) ||
+                    (!prevSocketRole.Permissions.ManageWebhooks && socketRole.Permissions.ManageWebhooks) ||
+                    (!prevSocketRole.Permissions.MentionEveryone && socketRole.Permissions.MentionEveryone) ||
+                    (!prevSocketRole.Permissions.MoveMembers && socketRole.Permissions.MoveMembers) ||
+                    (!prevSocketRole.Permissions.MuteMembers && socketRole.Permissions.MuteMembers) ||
+                    (!prevSocketRole.Permissions.PrioritySpeaker && socketRole.Permissions.PrioritySpeaker);
+        }
+
         public static List<T> GetContainers<T>(string path)
         {
             if (!File.Exists(path))
