@@ -38,12 +38,15 @@ namespace InfiniBot
                 .BuildServiceProvider();
 
             //Event subscriptions
+            client.Connected += Program.MainForm.BotConnected;
+            client.Disconnected += Program.MainForm.BotDisconnected;
+            commands.CommandExecuted += CommandExecuted;
             client.Log += Program.MainForm.Log;
             commands.Log += Program.MainForm.Log;
-            commands.CommandExecuted += CommandExecuted;
             client.UserJoined += UserJoined;
-            client.LoggedIn += Program.MainForm.BotLoggedIn;
-            client.LoggedOut += Program.MainForm.BotLoggedOut;
+            client.RoleCreated += RoleCreated;
+            client.RoleDeleted += RoleDeleted;
+            client.RoleUpdated += RoleEdited;
 
             await RegisterCommandsAsync();
 
@@ -58,6 +61,69 @@ namespace InfiniBot
             {
                 MessageBox.Show($"Something went wrong while trying to connect to the bot account.\n\nException:\n{e}", "ERROR: Could not connect");
             }
+        }
+
+        private Task RoleCreated(SocketRole socketRole)
+        {
+            // Give the new role properties corresponding to its permission level.
+            // This is done to avoid administrative roles being joinable directly after creation and to minimize the extra work needed by admins.
+            bool joinable = false;
+            RoleType roleType = RoleType.Other;
+            if (Data.HasAdministrativePermission(socketRole))
+            {
+                joinable = false;
+                roleType = RoleType.Admin;
+            }
+            else if (socketRole.Permissions.Connect ||
+                socketRole.Permissions.SendMessages ||
+                socketRole.Permissions.SendTTSMessages ||
+                socketRole.Permissions.Speak ||
+                socketRole.Permissions.ViewChannel)
+            {
+                joinable = true;
+                roleType = RoleType.Game;
+            }
+
+            // Create RoleContainer and add it to the file.
+            RoleContainer roleContainer = new RoleContainer(socketRole.Name, joinable, roleType);
+            Data.AddContainer(roleContainer, Data.ROLE_PATH);
+
+            return Task.CompletedTask;
+        }
+
+        private Task RoleDeleted(SocketRole socketRole)
+        {
+            // Get RoleContainer if it exists.
+            List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.ROLE_PATH);
+            RoleContainer roleContainer = roleContainers.FirstOrDefault(rc => rc.name.ToLower() == socketRole.Name.ToLower());
+            if (roleContainer != null)
+            {
+                // Remove RoleContainer.
+                Data.RemoveContainer(roleContainer, Data.ROLE_PATH);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private Task RoleEdited(SocketRole prevSocketRole, SocketRole socketRole)
+        {
+            // Get roleContainers and check if role exists.
+            List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.ROLE_PATH);
+            RoleContainer roleContainer = roleContainers.FirstOrDefault(rc => rc.name.ToLower() == prevSocketRole.Name.ToLower());
+            if (roleContainer != null)
+            {
+                roleContainer.name = socketRole.Name;
+
+                // Check if administrative permissions have changed. If so make unjoinable.
+                if (Data.ReceivedAdministrativePermission(prevSocketRole, socketRole))
+                {
+                    roleContainer.joinable = false;
+                    roleContainer.roleType = RoleType.Admin;
+                }
+                Data.SaveContainers(roleContainers, Data.ROLE_PATH);
+            }
+
+            return Task.CompletedTask;
         }
 
         public async Task StopBotAsync()

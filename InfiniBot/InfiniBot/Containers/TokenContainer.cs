@@ -21,5 +21,14 @@ namespace InfiniBot
         {
             return $"{name}:{token}";
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is TokenContainer)
+            {
+                return name == (obj as TokenContainer).name && token == (obj as TokenContainer).token;
+            }
+            return base.Equals(obj);
+        }
     }
 }
