@@ -373,7 +373,32 @@ namespace InfiniBot
             await ReplyAsync(embed: new EmbedBuilder().WithColor(Data.COLOR_BOT).WithTitle("Group").WithDescription(toReturn).Build());
         }
 
+        // Takes a topic and the spoiler then shows the topic while keeping the spoiler hidden under a hover link
+        [Command("Spoiler")]
+        [Summary("A command to post spoilers safely")] // Example: !spoiler ""This is the topic"" ""This is the spoiler""
+        public async Task Spoiler(
+            [Summary("Topic the spoiler is about, (use \"\" for multiple words)")]
+            [Example("Titanic")]
+            [Example("\"My Hero Academia\"")]
+            string spoilerTopic, 
+            [Summary("The spoiler")]
+            [Example("The boat sinks")]
+            [Example("\"Izuku Midoriya is a fan of All might\"")]
+            [Remainder]
+            string spoiler)
+        {
+            EmbedBuilder builder = new EmbedBuilder();
 
+            await Context.Message.DeleteAsync();
+
+            builder.WithTitle(Context.User.Username + " posted a spoiler about: " + spoilerTopic);
+
+            builder.WithDescription($"[Hover me for spoiler!](https://bit.ly/2Dznxn0 '{spoiler}')"); // Also it links to the wikipedia article about spoilers
+
+            builder.WithColor(Data.COLOR_BOT);
+            
+            await ReplyAsync("", false, embed: builder.Build());
+        }
 
         private string GetPreconditionsAsString(IReadOnlyList<PreconditionAttribute> preconditions)
         {
