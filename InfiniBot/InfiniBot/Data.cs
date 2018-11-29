@@ -12,12 +12,24 @@ using Newtonsoft.Json;
 
 namespace InfiniBot
 {
+    public enum RoleType
+    {
+        Admin = 0,
+        Color,
+        Game,
+        Other,
+        Last
+    }
+
+
+
     class Data
     {
         public const string
             BOT_PREFIX = "!",
             FILE_PATH = "BotFiles\\",
             TOKEN_PATH = "token.json",
+            ROLE_PATH = "role.json",
             REQUESTS_AWAITING_APPROVAL_FILE_NAME = "RequestsAwaitingApproval.txt",
             URL_IMAGE_INFINITY_GAMING = "https://i.imgur.com/hQR0KSE.png",
             URL_ERROR_ICON = "https://i.imgur.com/HSrsLjE.png",
@@ -39,49 +51,106 @@ namespace InfiniBot
             COLOR_BOT = new Color(32, 102, 148),
             COLOR_ERROR = new Color(255, 0, 0),
             COLOR_SUCCESS = new Color(0, 255, 0);
+        
 
-
-
-        public static List<TokenContainer> GetTokens()
+        
+        public static List<T> GetContainers<T>(string path)
         {
-            if (!File.Exists(TOKEN_PATH))
+            if (!File.Exists(path))
             {
-                FileStream fs = File.Create(TOKEN_PATH);
+                FileStream fs = File.Create(path);
                 fs.Close();
                 fs.Dispose();
             }
-            string inputJson = File.ReadAllText(TOKEN_PATH);
+            string inputJson = File.ReadAllText(path);
 
-            List<TokenContainer> tokenContainers = JsonConvert.DeserializeObject<List<TokenContainer>>(inputJson);
-            if(tokenContainers != null)
+            List<T> containers = JsonConvert.DeserializeObject<List<T>>(inputJson);
+            if (containers != null)
             {
-                return tokenContainers;
+                return containers;
             }
             else
             {
-                return new List<TokenContainer>();
+                return new List<T>();
             }
         }
 
-        public static void AddToken(TokenContainer tokenContainer)
+        public static void SaveContainers<T>(List<T> containers, string path)
         {
-            List<TokenContainer> tokenContainers = GetTokens();
-
-            tokenContainers.Add(tokenContainer);
-
-            string outputJson = JsonConvert.SerializeObject(tokenContainers, Formatting.Indented);
-            File.WriteAllText(TOKEN_PATH, outputJson);
+            string outputJson = JsonConvert.SerializeObject(containers, Formatting.Indented);
+            File.WriteAllText(path, outputJson);
         }
 
-        public static void RemoveToken(TokenContainer tokenContainer)
+        public static void AddContainer<T>(T container, string path)
         {
-            List<TokenContainer> tokenContainers = GetTokens();
+            List<T> containers = GetContainers<T>(path);
 
-            var tc = tokenContainers.FirstOrDefault(x => x.name == tokenContainer.name);
-            tokenContainers.Remove(tc);
+            containers.Add(container);
 
-            string outputJson = JsonConvert.SerializeObject(tokenContainers, Formatting.Indented);
-            File.WriteAllText(TOKEN_PATH, outputJson);
+            string outputJson = JsonConvert.SerializeObject(containers, Formatting.Indented);
+            File.WriteAllText(path, outputJson);
+        }
+
+        public static void RemoveContainer<T>(T container, string path)
+        {
+            List<T> containers = GetContainers<T>(path);
+
+            var c = containers.FirstOrDefault(x => x.Equals(container));
+            containers.Remove(c);
+
+            string outputJson = JsonConvert.SerializeObject(containers, Formatting.Indented);
+            File.WriteAllText(path, outputJson);
+        }
+
+        public static EmbedBuilder AddRoleFields(EmbedBuilder builder, bool includeUnjoinable = false, RoleType roleType = RoleType.Last)
+        {
+            // Get the RoleContainers.
+            List<RoleContainer> roleContainers = GetContainers<RoleContainer>(ROLE_PATH);
+
+            // Roles are put into diffent fields depending on their roleType and neatly stacked for the return message.
+            // If a RoleType has been specified it skips the other types. 
+            int start = 0,
+                end = (int)RoleType.Last;
+            if (roleType != RoleType.Last)
+            {
+                start = (int)roleType;
+                end = (int)roleType + 1;
+            }
+            for (int i = start; i < end; i++)
+            {
+                string roles = "";
+                List<RoleContainer> rcs = roleContainers.Where(rc => (int)rc.roleType == i).ToList();
+                rcs.Sort((a, b) => a.name.CompareTo(b.name));
+                if (rcs.Count() > 0)
+                {
+                    for (int j = 0; j < rcs.Count(); j++)
+                    {
+                        if ((rcs[j].joinable || includeUnjoinable) && rcs[j].name != "@everyone")
+                        {
+                            if (j > 0)
+                            {
+                                roles += "\n";
+                            }
+                            roles += rcs[j].name;
+                            if (includeUnjoinable)
+                            {
+                                roles += " (";
+                                if (!rcs[j].joinable)
+                                {
+                                    roles += "un";
+                                }
+                                roles += "joinable)";
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    roles += "None";
+                }
+                builder.AddField(((RoleType)i).ToString(), roles);
+            }
+            return builder;
         }
 
         public static Embed GetJoinEmbed(SocketGuild Guild)
@@ -109,7 +178,7 @@ namespace InfiniBot
             return builder.Build();
         }
 
-        public static EmbedBuilder GetFeedbackEmbed()
+        public static EmbedBuilder GetFeedbackEmbedBuilder()
         {
             EmbedBuilder builder = new EmbedBuilder();
 
@@ -117,6 +186,19 @@ namespace InfiniBot
                 .WithFooter(EMBED_FOOTER_DELETE);
 
             return builder;
+        }
+
+        public static string RGBToHexCode(int R, int G, int B)
+        {
+            return "#" + R.ToString("X") + G.ToString("X") + B.ToString("X");
+        }
+
+        public static Tuple<int,int,int> HexCodeToRGB(string hexCode)
+        {
+            return new Tuple<int, int, int>(
+                int.Parse(hexCode.Remove(0, 1).Remove(3, 4), System.Globalization.NumberStyles.HexNumber),
+                int.Parse(hexCode.Remove(0, 3).Remove(4, 2), System.Globalization.NumberStyles.HexNumber),
+                int.Parse(hexCode.Remove(0, 5), System.Globalization.NumberStyles.HexNumber));
         }
     }
 }

@@ -19,30 +19,52 @@ namespace InfiniBot
         public Form()
         {
             InitializeComponent();
-            List<TokenContainer> tokenContainers = Data.GetTokens();
+            List<TokenContainer> tokenContainers = Data.GetContainers<TokenContainer>(Data.TOKEN_PATH);
             string[] names = new string[tokenContainers.Count];
             for (int i = 0; i < tokenContainers.Count; i++)
             {
                 names[i] = tokenContainers[i].name;
             }
             comboBoxToken.Items.AddRange(names);
+            if (comboBoxToken.Items.Count > 0)
+            {
+                comboBoxToken.Text = comboBoxToken.Items[0].ToString();
+            }
         }
 
         public Task Log(LogMessage message)
         {
             ListViewItem lvi = new ListViewItem(DateTime.Now.ToString());
             lvi.SubItems.Add(message.Severity.ToString());
+
             if (!string.IsNullOrEmpty(message.Source))
             {
                 lvi.SubItems.Add(message.Source);
-                if (!string.IsNullOrEmpty(message.Message))
+            }
+            else
+            {
+                lvi.SubItems.Add("Unknown");
+            }
+
+            if (!string.IsNullOrEmpty(message.Message))
+            {
+                lvi.SubItems.Add(message.Message);
+            }
+            else
+            {
+                if(message.Exception != null)
                 {
-                    lvi.SubItems.Add(message.Message);
-                    if (message.Exception != null)
-                    {
-                        lvi.SubItems.Add(message.Exception.ToString());
-                    }
+                    lvi.SubItems.Add("Exception thrown");
                 }
+                else
+                {
+                    lvi.SubItems.Add("Empty");
+                }
+            }
+
+            if (message.Exception != null)
+            {
+                lvi.SubItems.Add(message.Exception.ToString());
             }
             switch (message.Severity)
             {
@@ -101,7 +123,7 @@ namespace InfiniBot
                     Data.AddToken(comboBoxToken.Text);
                 }*/
                 string token = comboBoxToken.Text;
-                TokenContainer tc = Data.GetTokens().FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text);
+                TokenContainer tc = Data.GetContainers<TokenContainer>(Data.TOKEN_PATH).FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text);
                 if(tc != null)
                 {
                     token = tc.token;
@@ -119,18 +141,19 @@ namespace InfiniBot
             await bot.StopBotAsync();
         }
 
-        public Task BotLoggedIn()
+        public Task BotConnected()
         {
             Invoke((Action)delegate
             {
                 buttonStartBot.Enabled = false;
                 buttonStopBot.Enabled = true;
 
-                if (Data.GetTokens().FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text) == null)
+                if (Data.GetContainers<TokenContainer>(Data.TOKEN_PATH).FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text) == null)
                 {
                     try
                     {
-                        Data.AddToken(new TokenContainer(bot.client.CurrentUser.Username, comboBoxToken.Text));
+                        Console.WriteLine(bot.client.CurrentUser);
+                        Data.AddContainer<TokenContainer>(new TokenContainer(bot.client.CurrentUser.Username, comboBoxToken.Text), Data.TOKEN_PATH);
                         comboBoxToken.Items.Add(bot.client.CurrentUser.Username);
                         comboBoxToken.Text = bot.client.CurrentUser.Username;
                     }
@@ -143,7 +166,7 @@ namespace InfiniBot
             return Task.CompletedTask;
         }
 
-        public Task BotLoggedOut()
+        public Task BotDisconnected(Exception e)
         {
             Invoke((Action)delegate
             {
@@ -197,10 +220,10 @@ namespace InfiniBot
         {
             if (!string.IsNullOrEmpty(comboBoxToken.Text))
             {
-                TokenContainer tc = Data.GetTokens().FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text);
+                TokenContainer tc = Data.GetContainers<TokenContainer>(Data.TOKEN_PATH).FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text);
                 if (tc != null)
                 {
-                    Data.RemoveToken(tc);
+                    Data.RemoveContainer(tc, Data.TOKEN_PATH);
                     comboBoxToken.Items.Remove(comboBoxToken.Text);
                     comboBoxToken.Text = "";
                 }
