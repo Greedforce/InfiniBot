@@ -349,8 +349,17 @@ namespace InfiniBot
 
         // Takes a topic and the spoiler then shows the topic while keeping the spoiler hidden under a hover link
         [Command("Spoiler")]
-        [Summary("A command to post spoilers safely \n" + @"Example: !spoiler ""This is the topic"" ""This is the spoiler""")]
-        public async Task Spoiler([Summary("Topic the spoiler is about")] string spoilerTopic, [Summary("The spoiler")][Remainder] string spoiler)
+        [Summary("A command to post spoilers safely")] // Example: !spoiler ""This is the topic"" ""This is the spoiler""
+        public async Task Spoiler(
+            [Summary("Topic the spoiler is about, (use \"\" for multiple words)")]
+            [Example("Titanic")]
+            [Example("\"My Hero Academia\"")]
+            string spoilerTopic, 
+            [Summary("The spoiler")]
+            [Example("The boat sinks")]
+            [Example("\"Izuku Midoriya is a fan of All might\"")]
+            [Remainder]
+            string spoiler)
         {
             EmbedBuilder builder = new EmbedBuilder();
 
