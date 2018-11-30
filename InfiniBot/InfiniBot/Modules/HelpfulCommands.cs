@@ -373,31 +373,25 @@ namespace InfiniBot
             await ReplyAsync(embed: new EmbedBuilder().WithColor(Data.COLOR_BOT).WithTitle("Group").WithDescription(toReturn).Build());
         }
 
-        // Takes a topic and the spoiler then shows the topic while keeping the spoiler hidden under a hover link
         [Command("Spoiler")]
-        [Summary("A command to post spoilers safely")] // Example: !spoiler ""This is the topic"" ""This is the spoiler""
+        [Summary("Hides the specified spoiler under a hoverable message.")]
         public async Task Spoiler(
-            [Summary("Topic the spoiler is about, (use \"\" for multiple words)")]
+            [Summary("The spoiler topic (quotation marks are required if the topic contains spaces)")]
             [Example("Titanic")]
             [Example("\"My Hero Academia\"")]
-            string spoilerTopic, 
+            string topic, 
             [Summary("The spoiler")]
             [Example("The boat sinks")]
             [Example("\"Izuku Midoriya is a fan of All might\"")]
             [Remainder]
             string spoiler)
         {
-            EmbedBuilder builder = new EmbedBuilder();
-
             await Context.Message.DeleteAsync();
 
-            builder.WithTitle(Context.User.Username + " posted a spoiler about: " + spoilerTopic);
-
-            builder.WithDescription($"[Hover me for spoiler!](https://bit.ly/2Dznxn0 '{spoiler}')"); // Also it links to the wikipedia article about spoilers
-
-            builder.WithColor(Data.COLOR_BOT);
-            
-            await ReplyAsync("", false, embed: builder.Build());
+            await ReplyAsync(embed: new EmbedBuilder()
+                .WithColor(Data.COLOR_BOT)
+                .WithTitle(Context.User.Username + " posted a spoiler about:")
+                .WithDescription($"**{topic}**\n[Hover me for spoiler!](https://bit.ly/2Dznxn0 '{spoiler}')").Build());
         }
 
         private string GetPreconditionsAsString(IReadOnlyList<PreconditionAttribute> preconditions)
