@@ -373,7 +373,7 @@ namespace InfiniBot
             await ReplyAsync(embed: new EmbedBuilder().WithColor(Data.COLOR_BOT).WithTitle("Group").WithDescription(toReturn).Build());
         }
 
-        [Command("Spoiler")]
+        [Command("Spoiler", RunMode = RunMode.Async)]
         [Summary("Hides the specified spoiler under a hoverable message.")]
         public async Task Spoiler(
             [Summary("The spoiler topic (quotation marks are required if the topic contains spaces)")]
@@ -392,6 +392,19 @@ namespace InfiniBot
                 .WithColor(Data.COLOR_BOT)
                 .WithTitle(Context.User.Username + " posted a spoiler about:")
                 .WithDescription($"**{topic}**\n[Hover me for spoiler!](https://bit.ly/2Dznxn0 '{spoiler}')").Build());
+        }
+
+        [Command("RemindMe", RunMode = RunMode.Async)]
+        [Summary("")]
+        public async Task RemindMeAsync(
+            [Summary("The text the bot will post as a reminder (quotation marks are required if the topic contains spaces)")]
+            [Example("Movie")]
+            [Example("\"Movie night with the gang\"")]
+            [Remainder]
+            string text)
+        {
+            DateTime time = DateTime.Now;
+            Data.AddContainer(new ReminderContainer(text, time), Data.REMINDER_PATH);
         }
 
         private string GetPreconditionsAsString(IReadOnlyList<PreconditionAttribute> preconditions)

@@ -30,6 +30,7 @@ namespace InfiniBot
             FILE_PATH = "BotFiles\\",
             TOKEN_PATH = "token.json",
             ROLE_PATH = "role.json",
+            REMINDER_PATH = "reminder.json",
             REQUESTS_AWAITING_APPROVAL_FILE_NAME = "RequestsAwaitingApproval.txt",
             URL_IMAGE_INFINITY_GAMING = "https://i.imgur.com/hQR0KSE.png",
             URL_ERROR_ICON = "https://i.imgur.com/HSrsLjE.png",

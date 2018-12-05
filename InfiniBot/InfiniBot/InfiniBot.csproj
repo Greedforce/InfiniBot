@@ -163,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bot.cs" />
+    <Compile Include="Containers\ReminderContainer.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="Attribute\ExampleAttribute.cs" />
     <Compile Include="Form1.cs">
