@@ -47,6 +47,8 @@ namespace InfiniBot
             client.RoleCreated += RoleCreated;
             client.RoleDeleted += RoleDeleted;
             client.RoleUpdated += RoleEdited;
+            client.ReactionAdded += ReactionAdded;
+            client.ReactionRemoved += ReactionRemoved;
 
             await RegisterCommandsAsync();
 
@@ -61,6 +63,32 @@ namespace InfiniBot
             {
                 MessageBox.Show($"Something went wrong while trying to connect to the bot account.\n\nException:\n{e}", "ERROR: Could not connect");
             }
+        }
+
+        private Task ReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
+        {
+            ReactionGUIContainer rgc = Data.reactionGUIContainers.FirstOrDefault(r => r.messageId == reaction.MessageId);
+            if (rgc != null)
+            {
+                if(rgc.emote == reaction.Emote)
+                {
+                    rgc.action();
+                }
+            }
+            return Task.CompletedTask;
+        }
+
+        private Task ReactionRemoved(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
+        {
+            ReactionGUIContainer rgc = Data.reactionGUIContainers.FirstOrDefault(r => r.messageId == reaction.MessageId);
+            if (rgc != null)
+            {
+                if (rgc.emote == reaction.Emote)
+                {
+                    rgc.action();
+                }
+            }
+            return Task.CompletedTask;
         }
 
         private Task RoleCreated(SocketRole socketRole)
