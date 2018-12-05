@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 using System.Timers;
 
 using Discord;
+using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
+
 using Newtonsoft.Json;
 
 namespace InfiniBot
@@ -51,6 +54,10 @@ namespace InfiniBot
             COLOR_BOT = new Color(32, 102, 148),
             COLOR_ERROR = new Color(255, 0, 0),
             COLOR_SUCCESS = new Color(0, 255, 0);
+
+
+
+        public static List<ReactionGUIContainer> reactionGUIContainers = new List<ReactionGUIContainer>();
         
 
         
@@ -91,6 +98,12 @@ namespace InfiniBot
                     (!prevSocketRole.Permissions.MuteMembers && socketRole.Permissions.MuteMembers) ||
                     (!prevSocketRole.Permissions.PrioritySpeaker && socketRole.Permissions.PrioritySpeaker);
         }
+        
+
+        public static async Task test(SocketCommandContext Context, Emote emote)
+        {
+        }
+        
 
         public static List<T> GetContainers<T>(string path)
         {
@@ -139,6 +152,7 @@ namespace InfiniBot
             string outputJson = JsonConvert.SerializeObject(containers, Formatting.Indented);
             File.WriteAllText(path, outputJson);
         }
+        
 
         public static EmbedBuilder AddRoleFields(EmbedBuilder builder, bool includeUnjoinable = false, RoleType roleType = RoleType.Last)
         {
@@ -225,6 +239,7 @@ namespace InfiniBot
 
             return builder;
         }
+        
 
         public static string RGBToHexCode(int R, int G, int B)
         {
