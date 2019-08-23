@@ -70,7 +70,7 @@ namespace InfiniBot
             ReactionGUIContainer rgc = Data.reactionGUIContainers.FirstOrDefault(r => r.messageId == reaction.MessageId);
             if (rgc != null)
             {
-                if(rgc.emote == reaction.Emote)
+                if(rgc.emoji == reaction.Emote)
                 {
                     rgc.action();
                 }
@@ -83,7 +83,7 @@ namespace InfiniBot
             ReactionGUIContainer rgc = Data.reactionGUIContainers.FirstOrDefault(r => r.messageId == reaction.MessageId);
             if (rgc != null)
             {
-                if (rgc.emote == reaction.Emote)
+                if (rgc.emoji == reaction.Emote)
                 {
                     rgc.action();
                 }

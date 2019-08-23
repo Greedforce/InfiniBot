@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Discord;
 
@@ -7,13 +8,14 @@ namespace InfiniBot
     public class ReactionGUIContainer
     {
         public ulong messageId;
-        public Emote emote;
+        public Emoji emoji;
         public Action action;
+        List<object> values = new List<object>();
 
-        public ReactionGUIContainer(ulong messageId, Emote emote, Action action)
+        public ReactionGUIContainer(ulong messageId, Emoji emoji, Action action)
         {
             this.messageId = messageId;
-            this.emote = emote;
+            this.emoji = emoji;
             this.action = action;
         }
 
@@ -21,7 +23,7 @@ namespace InfiniBot
         {
             if (obj is ReactionGUIContainer)
             {
-                return messageId == (obj as ReactionGUIContainer).messageId && emote.Name == (obj as ReactionGUIContainer).emote.Name;
+                return messageId == (obj as ReactionGUIContainer).messageId && emoji.Name == (obj as ReactionGUIContainer).emoji.Name;
             }
             return base.Equals(obj);
         }

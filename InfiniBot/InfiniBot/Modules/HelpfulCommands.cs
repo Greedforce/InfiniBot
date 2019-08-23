@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using Discord;
 using Discord.Commands;
+using Discord.Rest;
 
 namespace InfiniBot
 {
@@ -403,8 +404,32 @@ namespace InfiniBot
             [Remainder]
             string text)
         {
-            DateTime time = DateTime.Now;
-            Data.AddContainer(new ReminderContainer(text, time), Data.REMINDER_PATH);
+            DateTime time;
+            // Add emotes based on message. Time + check mark for ok
+            int
+                value = 0,
+                years = 0,
+                months = 0,
+                days = 0,
+                hours = 0,
+                minutes = 0,
+                seconds = 0;
+            EmbedBuilder builder = new EmbedBuilder()
+                .WithColor(Data.COLOR_BOT)
+                .WithTitle("RemindMe - Set time")
+                .WithDescription($"I'll remind you about\n**{text}**\nin\n`{years}` years\n`{months}` months\n`{days}` days\n`{hours}` hours\n`{minutes}` minutes\n`{seconds}` seconds\n```{value}```")
+                .WithFooter("");
+            RestUserMessage reactionMessage = await Context.Channel.SendMessageAsync(embed: builder.Build());
+            Data.reactionGUIContainers.Add(new ReactionGUIContainer(reactionMessage.Id, new Emoji("🇾"), () => { years = value; reactionMessage.Embeds.FirstOrDefault().ToEmbedBuilder().Build(); }));
+            Data.reactionGUIContainers.Add(new ReactionGUIContainer(reactionMessage.Id, new Emoji("🇲"), () => { months = value; reactionMessage.Embeds.FirstOrDefault().ToEmbedBuilder().Build(); }));
+            Data.reactionGUIContainers.Add(new ReactionGUIContainer(reactionMessage.Id, new Emoji("🇩"), () => { days = value; reactionMessage.Embeds.FirstOrDefault().ToEmbedBuilder().Build(); }));
+            Data.reactionGUIContainers.Add(new ReactionGUIContainer(reactionMessage.Id, new Emoji("🇭"), () => { hours = value; reactionMessage.Embeds.FirstOrDefault().ToEmbedBuilder().Build(); }));
+            Data.reactionGUIContainers.Add(new ReactionGUIContainer(reactionMessage.Id, new Emoji("🕐"), () => { minutes = value; reactionMessage.Embeds.FirstOrDefault().ToEmbedBuilder().Build(); }));
+            Data.reactionGUIContainers.Add(new ReactionGUIContainer(reactionMessage.Id, new Emoji("🇸"), () => { seconds = value; reactionMessage.Embeds.FirstOrDefault().ToEmbedBuilder().Build(); }));
+            Data.reactionGUIContainers.Add(new ReactionGUIContainer(reactionMessage.Id, new Emoji("⬆"), () => { value++; reactionMessage.Embeds.FirstOrDefault().ToEmbedBuilder().Build(); }));
+            Data.reactionGUIContainers.Add(new ReactionGUIContainer(reactionMessage.Id, new Emoji("⬇"), () => { value--; reactionMessage.Embeds.FirstOrDefault().ToEmbedBuilder().Build(); }));
+            Data.reactionGUIContainers.Add(new ReactionGUIContainer(reactionMessage.Id, new Emoji("✅"), () => { time = DateTime.Now; time.AddYears(years).AddMonths(months).AddDays(days).AddHours(hours).AddMinutes(minutes).AddSeconds(seconds); Data.AddContainer(new ReminderContainer(text, time), Data.REMINDER_PATH); }));
+            
         }
 
         private string GetPreconditionsAsString(IReadOnlyList<PreconditionAttribute> preconditions)

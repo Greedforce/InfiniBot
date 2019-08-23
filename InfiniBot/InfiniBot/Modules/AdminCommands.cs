@@ -46,7 +46,8 @@ namespace InfiniBot
         [RequireOwner(Group = "user")]
         public async Task ResendJoinMessage(
             [Summary("The user who will receive the message")]
-            [Example("Hi I'm a bot. :D")]
+            [Example("238279899687813120")]
+            [Example("@Infinibot#6309")]
             SocketUser user = null)
         {
             await Context.Message.DeleteAsync();
@@ -61,5 +62,20 @@ namespace InfiniBot
             await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
             await m.DeleteAsync();
         }
+
+        /*[Command("React", RunMode = RunMode.Async)]
+        [Summary("Causes the bot to react to the specified message.")]
+        [RequireUserPermission(GuildPermission.Administrator, Group = "user")]
+        [RequireOwner(Group = "user")]
+        public async Task ReactToMessageasync(
+            [Summary("The id of the message to react to")]
+            [Example("510234996200570880")]
+            SocketUserMessage message,
+            [Summary("The emoji to react with")]
+            [Example(":thinking:")]
+            Emote emote)
+        {
+            await message.AddReactionAsync(emote);
+        }*/
     }
 }

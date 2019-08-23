@@ -101,11 +101,6 @@ namespace InfiniBot
         }
         
 
-        public static async Task test(SocketCommandContext Context, Emote emote)
-        {
-        }
-        
-
         public static List<T> GetContainers<T>(string path)
         {
             if (!File.Exists(path))
