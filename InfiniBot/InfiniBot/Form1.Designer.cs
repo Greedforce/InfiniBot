@@ -133,6 +133,7 @@
             this.comboBoxToken.Name = "comboBoxToken";
             this.comboBoxToken.Size = new System.Drawing.Size(529, 21);
             this.comboBoxToken.TabIndex = 5;
+            this.comboBoxToken.SelectedIndexChanged += new System.EventHandler(this.comboBoxToken_SelectedIndexChanged);
             // 
             // buttonTokenRemove
             // 
@@ -168,6 +169,7 @@
             this.Controls.Add(this.listViewConsole);
             this.Name = "Form";
             this.Text = "InfiniBot";
+            this.Load += new System.EventHandler(this.Form_Load);
             this.groupBoxToken.ResumeLayout(false);
             this.ResumeLayout(false);
 

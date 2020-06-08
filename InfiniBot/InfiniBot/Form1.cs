@@ -237,5 +237,15 @@ namespace InfiniBot
                 MessageBox.Show("You need to select a token before using this button.", "ERROR: Missing token!");
             }
         }
+
+        private void comboBoxToken_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

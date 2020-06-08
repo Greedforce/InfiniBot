@@ -22,12 +22,19 @@ namespace InfiniBot.Modules
             [Example("Other")]
             RoleType type = RoleType.Last)
         {
+            string listDescription = "Here is a list of every ";
+            if (type != RoleType.Last)
+                listDescription += "`" + type.ToString() + "`";
+            listDescription += $" role on `{Context.Guild.Name}`";
+            if (type == RoleType.Last)
+                listDescription += ", sorted into types:";
+
             // Declare EmbedBuilder base.
             EmbedBuilder builder = new EmbedBuilder()
                 .WithColor(Data.COLOR_BOT)
                 .WithThumbnailUrl(Data.URL_IMAGE_INFINITY_GAMING)
                 .WithTitle("Roles")
-                .WithDescription($"Here is a list of every role on `{Context.Guild.Name}`, sorted into types:");
+                .WithDescription(listDescription);
 
             // Get the role list fields to the EmbedBuilder.
             builder = Data.AddRoleFields(builder, ((SocketGuildUser)Context.User).GuildPermissions.Administrator, type);
@@ -35,17 +42,17 @@ namespace InfiniBot.Modules
             // Send role list to user and return feedback message.
             await Context.User.SendMessageAsync(embed: builder.Build());
 
-            string description = "I have PMed you a list of the ";
+            string feedbackDescription = "I have PMed you a list of the ";
             if(type == RoleType.Last)
             {
-                description += "server";
+                feedbackDescription += "server";
             }
             else
             {
-                description += $"`{type.ToString()}`";
+                feedbackDescription += $"`{type.ToString()}`";
             }
-            description += " roles.";
-            IMessage m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithTitle("Role list sent").WithDescription(description).Build());
+            feedbackDescription += " roles.";
+            IMessage m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithTitle("Role list sent").WithDescription(feedbackDescription).Build());
 
             // Delete prompt and feedback messages.
             await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
@@ -56,7 +63,7 @@ namespace InfiniBot.Modules
         [Command("Preview", RunMode = RunMode.Async)]
         [Summary("PMs a preview of the specified role to the user.")]
         public async Task PreviewRoleAsync(
-            [Summary("The name of the role(s) the user wishes to preview. Role names are seperated by ','s.")]
+            [Summary("The name of the role(s) the user wishes to preview, seperated by ','s.")]
             [Example("Overwatch")]
             [Example("Overwatch, Dota 2, Payday 2")]
             [Remainder]
@@ -127,6 +134,8 @@ namespace InfiniBot.Modules
                     {
                         toReturn += "\nNone";
                     }
+
+                    // Add "associated privileges" (beyond @everyone)
 
                     // PM preview to user.
                     await Context.User.SendMessageAsync(embed: new EmbedBuilder().WithColor(socketRole.Color).WithTitle("Role Preview").WithDescription(toReturn).Build());
@@ -300,23 +309,88 @@ namespace InfiniBot.Modules
             // Get all SocketRoles on the server and give them properties corresponding to their permission level.
             // This is done to avoid administrative roles being joinable directly after the scan and to minimize the extra work needed by admins.
             List<RoleContainer> roleContainers = new List<RoleContainer>();
+            List<SocketGuildChannel> channels = Context.Guild.Channels.ToList();
             foreach (SocketRole sr in Context.Guild.Roles)
             {
                 bool joinable = false;
                 RoleType roleType = RoleType.Other;
                 if (Data.HasAdministrativePermission(sr))
                 {
-                    joinable = false;
                     roleType = RoleType.Admin;
+                    joinable = false;
                 }
-                else if (sr.Permissions.Connect ||
-                    sr.Permissions.SendMessages ||
-                    sr.Permissions.SendTTSMessages ||
-                    sr.Permissions.Speak ||
-                    sr.Permissions.ViewChannel)
+                else
                 {
-                    joinable = true;
-                    roleType = RoleType.Game;
+                    // Get all Overwrites for the current SocketRole (sr)
+                    //Context.Guild.Channels.Where(c => c.GetPermissionOverwrite(sr).HasValue).ToList().ForEach(c => roleOverwrites.AddRange(c.PermissionOverwrites.Where(o => o.TargetType == PermissionTarget.Role && o.TargetId == sr.Id)));
+                    List<Overwrite> roleOverwrites = new List<Overwrite>();
+                    foreach (SocketGuildChannel c in channels)
+                    {
+                        List<Overwrite> channelOverwrites = c.PermissionOverwrites.ToList();
+                        foreach (Overwrite o in channelOverwrites)
+                        {
+                            if(o.TargetType == PermissionTarget.Role &&
+                                o.TargetId == sr.Id)
+                            {
+                                roleOverwrites.Add(o);
+                            }
+                        }
+                    }
+
+                    // Go through Overwrites and check channel specific permissions
+                    bool
+                        channelAccess = false,
+                        channelModerator = false;
+                    foreach (Overwrite o in roleOverwrites)
+                    {
+                        if (o.Permissions.ViewChannel == PermValue.Allow)
+                        {
+                            channelAccess = true;
+                        }
+                        if(o.Permissions.ManageMessages == PermValue.Allow)
+                        {
+                            channelModerator = true;
+                        }
+                    }
+
+                    if (sr.Permissions.ToList().Count <= 0)
+                    {
+                        if (channelAccess)
+                        {
+                            if (sr.IsMentionable)
+                            {
+                                roleType = RoleType.Other; // no privs, outside of channel access, mentionable
+                                joinable = false;
+                            }
+                            else
+                            {
+                                if(channelModerator)
+                                {
+                                    roleType = RoleType.Moderator; // no privs, outside of specific channels, not mentionable
+                                    joinable = false;
+                                }
+                                else
+                                {
+                                    roleType = RoleType.Game; // no privs, outside of channel access, not mentionable
+                                    joinable = true;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            roleType = RoleType.Color; // no privs, not mentionable
+                            joinable = true;
+                        }
+                    }
+                    /*if (sr.Permissions.Connect ||
+                        sr.Permissions.SendMessages ||
+                        sr.Permissions.SendTTSMessages ||
+                        sr.Permissions.Speak ||
+                        sr.Permissions.ViewChannel)
+                    {
+                        roleType = RoleType.Game;
+                        joinable = true;
+                    }*/
                 }
                 roleContainers.Add(new RoleContainer(sr.Name, joinable, roleType));
             }
@@ -343,9 +417,11 @@ namespace InfiniBot.Modules
             [Example("Overwatch")]
             [Example("\"Payday 2\"")]
             string role,
-            [Summary("The type the role should be.")]
+            [Summary("The type the role should be. (0-3 number input is also valid)")]
+            [Example("Admin")]
+            [Example("Color")]
             [Example("Game")]
-            [Example("2")]
+            [Example("Other")]
             RoleType type,
             [Summary("If the role should be joinable or not.")]
             [Example("true")]
@@ -356,18 +432,25 @@ namespace InfiniBot.Modules
             // Get SocketRole and check if role exists.
             List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.ROLE_PATH);
             SocketRole socketRole = Context.Guild.Roles.FirstOrDefault(sr => sr.Name.ToLower() == role.ToLower());
-            if (roleContainers.FirstOrDefault(rc => rc.name.ToLower() == role.ToLower()) == null && socketRole != null)
+            if(socketRole != null)
             {
-                // Create RoleContainer and add it to the file.
-                RoleContainer roleContainer = new RoleContainer(socketRole.Name, joinable, type);
-                Data.AddContainer(roleContainer, Data.ROLE_PATH);
+                if (roleContainers.FirstOrDefault(rc => rc.name.ToLower() == role.ToLower()) == null)
+                {
+                    // Create RoleContainer and add it to the file.
+                    RoleContainer roleContainer = new RoleContainer(socketRole.Name, joinable, type);
+                    Data.AddContainer(roleContainer, Data.ROLE_PATH);
 
-                // Return feedback message.
-                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_SUCCESS).WithTitle("Role added").WithDescription($"The `{roleContainer.name} ({roleContainer.roleType} - {roleContainer.joinable})` role has been successfully added to the database.").Build());
+                    // Return feedback message.
+                    m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_SUCCESS).WithTitle("Role added").WithDescription($"The `{roleContainer.name} ({roleContainer.roleType} - {roleContainer.joinable})` role has been successfully added to the database.").Build());
+                }
+                else
+                {
+                    m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("ERROR: Role not found").WithDescription($"The `{role}` role you specified already exist in the database.").Build());
+                }
             }
             else
             {
-                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("ERROR: Role not found").WithDescription($"The `{role}` role you specified does not exist.").Build());
+                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("ERROR: Role not found").WithDescription($"The `{role}` role you specified does not exist on the server.").Build());
             }
 
             // Delete prompt and feedback messages.
@@ -396,11 +479,11 @@ namespace InfiniBot.Modules
                 Data.RemoveContainer(roleContainer, Data.ROLE_PATH);
 
                 // Return feedback message.
-                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("Role added").WithDescription($"The `{roleContainer.name}` role has been successfully removed from the database.").Build());
+                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("Role removed").WithDescription($"The `{roleContainer.name}` role has been successfully removed from the database.").Build());
             }
             else
             {
-                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("ERROR: Role not found").WithDescription($"The `{role}` role you specified does not exist.").Build());
+                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("ERROR: Role not found").WithDescription($"The `{role}` role you specified does not exist in the database.").Build());
             }
 
             // Delete prompt and feedback messages.
@@ -418,9 +501,11 @@ namespace InfiniBot.Modules
             [Example("Overwatch")]
             [Example("\"Payday 2\"")]
             string role,
-            [Summary("The type the role should be.")]
+            [Summary("The type the role should be. (0-3 number input is also valid)")]
+            [Example("Admin")]
+            [Example("Color")]
             [Example("Game")]
-            [Example("2")]
+            [Example("Other")]
             RoleType type,
             [Summary("If the role should be joinable or not.")]
             [Example("true")]
@@ -431,21 +516,29 @@ namespace InfiniBot.Modules
             // Get roleContainers and check if role exists.
             List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.ROLE_PATH);
             RoleContainer roleContainer = roleContainers.FirstOrDefault(rc => rc.name.ToLower() == role.ToLower());
-            if (roleContainer != null && Context.Guild.Roles.FirstOrDefault(sr => sr.Name.ToLower() == role.ToLower()) != null)
+            SocketRole socketRole = Context.Guild.Roles.FirstOrDefault(sr => sr.Name.ToLower() == role.ToLower());
+            if (roleContainer != null)
             {
-                RoleType prevType = roleContainer.roleType;
-                bool prevJoinable = roleContainer.joinable;
-                roleContainer.roleType = type;
-                roleContainer.joinable = joinable;
+                if (socketRole != null)
+                {
+                    RoleType prevType = roleContainer.roleType;
+                    bool prevJoinable = roleContainer.joinable;
+                    roleContainer.roleType = type;
+                    roleContainer.joinable = joinable;
 
-                Data.SaveContainers(roleContainers, Data.ROLE_PATH);
+                    Data.SaveContainers(roleContainers, Data.ROLE_PATH);
 
-                // Return feedback message.
-                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_SUCCESS).WithTitle("Role edited").WithDescription($"The `{roleContainer.name}` role has been successfully edited from `{prevType} - {prevJoinable}` to `{roleContainer.roleType} - {roleContainer.joinable}`").Build());
+                    // Return feedback message.
+                    m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_SUCCESS).WithTitle("Role edited").WithDescription($"The `{roleContainer.name}` role has been successfully edited from `{prevType} - {prevJoinable}` to `{roleContainer.roleType} - {roleContainer.joinable}`").Build());
+                }
+                else
+                {
+                    m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("ERROR: Role not found").WithDescription($"The `{role}` role you specified does not exist on the server.").Build());
+                }
             }
             else
             {
-                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("ERROR: Role not found").WithDescription($"The `{role}` role you specified does not exist.").Build());
+                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("ERROR: Role not found").WithDescription($"The `{role}` role you specified does not exist in the database.").Build());
             }
 
             // Delete prompt and feedback messages.

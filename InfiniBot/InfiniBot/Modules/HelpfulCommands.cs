@@ -262,11 +262,11 @@ namespace InfiniBot
             }
         }
 
-        [Command("Roll", RunMode = RunMode.Async)]// Needs to be updated to a better system
+        [Command("Roll", RunMode = RunMode.Async)] // Needs to be updated to a better system
         [Alias("R")]
         [Summary("Rolls the specified dice and displays the result.")]
         public async Task RollDice(
-            [Summary("The dice you wish to roll, following the format of \"<nr of dice>d<sides of the dice>+modifier\"")]
+            [Summary("The dice you wish to roll, following the format of \"<nr of dice>d<nr of sides>+modifier\"")]
             [Example("2d6+1")]
             string input)
         {
@@ -373,8 +373,9 @@ namespace InfiniBot
             await ReplyAsync(embed: new EmbedBuilder().WithColor(Data.COLOR_BOT).WithTitle("Group").WithDescription(toReturn).Build());
         }
 
-        [Command("Spoiler")]
+        [Command("Spoiler")] // Old, replaced by discord's own spoiler function
         [Summary("Hides the specified spoiler under a hoverable message.")]
+        [Hidden]
         public async Task Spoiler(
             [Summary("The spoiler topic (quotation marks are required if the topic contains spaces)")]
             [Example("Titanic")]

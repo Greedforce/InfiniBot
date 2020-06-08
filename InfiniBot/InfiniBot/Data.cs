@@ -18,6 +18,7 @@ namespace InfiniBot
     public enum RoleType
     {
         Admin = 0,
+        Moderator,
         Color,
         Game,
         Other,
@@ -48,7 +49,7 @@ namespace InfiniBot
         public const int
             CHAR_LIMIT = 2000,
             MESSAGE_RETRIEVAL_MAX = 100,
-            MESSAGE_DELETE_DELAY = 5;
+            MESSAGE_DELETE_DELAY = 5; // Remember to update the string above as well if you change this value
 
         public static readonly Color
             COLOR_BOT = new Color(32, 102, 148),
@@ -97,11 +98,6 @@ namespace InfiniBot
                     (!prevSocketRole.Permissions.MoveMembers && socketRole.Permissions.MoveMembers) ||
                     (!prevSocketRole.Permissions.MuteMembers && socketRole.Permissions.MuteMembers) ||
                     (!prevSocketRole.Permissions.PrioritySpeaker && socketRole.Permissions.PrioritySpeaker);
-        }
-        
-
-        public static async Task test(SocketCommandContext Context, Emote emote)
-        {
         }
         
 
@@ -159,7 +155,7 @@ namespace InfiniBot
             // Get the RoleContainers.
             List<RoleContainer> roleContainers = GetContainers<RoleContainer>(ROLE_PATH);
 
-            // Roles are put into diffent fields depending on their roleType and neatly stacked for the return message.
+            // Roles are put into different fields depending on their roleType and neatly stacked for the return message.
             // If a RoleType has been specified it skips the other types. 
             int start = 0,
                 end = (int)RoleType.Last;
@@ -207,27 +203,26 @@ namespace InfiniBot
 
         public static Embed GetJoinEmbed(SocketGuild Guild)
         {
-            string description = "**Welcome to " + Guild.Name + "!**";
+            string description = "";
             description += "\n\n**Roles and Games**";
             description += "\nWhen you first join the server you won't have a lot of text and voice channels that are visible to you. This is because you do not have the roles necessary to see them.";
-            description += "\nIn order to access the channels of the games you play or would like to discuss, please use the `!Join <role>` command, in any text channel on the server, to have the appropriate role added to you.";
+            description += "\n\nIn order to access the channels of games you play or would like to discuss, please use the `!Join <role>` command, to have the appropriate role added to you.";
             description += " Similarly, you can use the `!Leave <role>` command to have roles removed from you.";
-            description += "\nThere are certain roles that exist only to change the color of your name and have no further purpose beyond this. These are joined and left just like any other role.";
-            description += "\n\nTo see a list of the different games/roles you can join to see the corresponding chat rooms, use the `!Games` or `!Roles` command and I will PM you a list of the available roles.";
+            description += "\n\nThere are certain roles that exist only to change the color of your name and have no further purpose beyond this. These are joined and left just like any other role.";
+            description += "\n\n\nTo see a list of the different games/roles you can join to see the corresponding chat rooms, use the `!Games` or `!Roles` command and I will PM you a list of the available roles.";
             description += "\nNote: Don't worry about cluttering text channels. The command automatically removes both the prompt and feedback message after 5 seconds.";
             description += "\n\n**Rules**";
             description += "\nA full list can be found in the `Rules` text channel, but common sense goes a long way.";
             description += "\nWe would however ask that you keep to the appropriate channels (for example: don't post things related to Overwatch in the Dota 2 channel).";
             description += "\n\n\n**Enjoy your stay!**\n/The " + Guild.Name + " crew.";
 
-            EmbedBuilder builder = new EmbedBuilder();
-
-            builder.WithDescription(description)
+            return new EmbedBuilder()
                 .WithColor(COLOR_BOT)
                 .WithThumbnailUrl(URL_IMAGE_INFINITY_GAMING)
-                .WithFooter("p.s. If you have any further questions, feel free to ask an admin. (Or use the `!Help` command.)");
-
-            return builder.Build();
+                .WithTitle("**Welcome to " + Guild.Name + "!**")
+                .WithDescription(description)
+                .WithFooter("p.s. If you have any further questions, feel free to ask an admin. (Or use the `!Help` command.)")
+                .Build();
         }
 
         public static EmbedBuilder GetFeedbackEmbedBuilder()

@@ -60,9 +60,9 @@ namespace InfiniBot
             await m.DeleteAsync();
         }
 
-        [Command("Avatar", RunMode = RunMode.Async)]
+        [Command("Avatar", RunMode = RunMode.Async)] // Not working
         [Summary("Changes the bots avatar.")]
-        [RequireOwner] // Not working
+        [RequireOwner]
         public async Task ChangeBotGameAsync()
         {
             Attachment avatar = Context.Message.Attachments.FirstOrDefault();
