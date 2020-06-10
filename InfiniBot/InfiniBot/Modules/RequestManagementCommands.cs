@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 using Discord;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
 
 namespace InfiniBot
@@ -33,17 +35,19 @@ namespace InfiniBot
                 UpdateServerRequestInfo();
 
                 // Inform admins
-                await Context.Guild.GetTextChannel(Data.CHANNEL_ID_ADMIN).SendMessageAsync(embed: Data.GetFeedbackEmbedBuilder()
+                await Context.Guild.GetTextChannel(Data.CHANNEL_ID_ADMIN).SendMessageAsync(embed: new EmbedBuilder()
                     .WithTitle("New Request Added!")
                     .WithDescription(Context.Guild.GetRole(Data.ROLE_ID_ADMIN).Mention + ", a new request was added by a user and awaits approval")
+                    .WithAutoDeletionFooter()
                     .Build());
-
-                EmbedBuilder builder = new EmbedBuilder();
-                builder.WithColor(Data.COLOR_SUCCESS)
+                
+                IMessage m = await ReplyAsync(
+                    embed: new EmbedBuilder()
+                    .WithColor(Data.COLOR_SUCCESS)
                     .WithTitle("Request Added!")
                     .WithDescription("Your request has been added to the list for approval. Once it has been approved by an admin it will be available for voting in " + ((SocketTextChannel)Context.Guild.GetChannel(Data.CHANNEL_ID_REQUEST_VOTING)).Mention + ".")
-                    .WithFooter("(This message will delete itself in " + Data.MESSAGE_DELETE_DELAY + " seconds)");
-                IMessage m = await ReplyAsync(embed: builder.Build());
+                    .WithAutoDeletionFooter()
+                    .Build());
                 await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
                 await Context.Message.DeleteAsync();
                 await m.DeleteAsync();
@@ -61,6 +65,8 @@ namespace InfiniBot
                 await m.DeleteAsync();
             }
         }
+
+        // Old code below this line
 
         [Command("Display")]
         [Summary("PMs the user a list of all the server requests that are currently pending approval.")]
@@ -98,8 +104,8 @@ namespace InfiniBot
                 .WithDescription("I have PMed you the list of requests.")
                 .WithFooter("(This message will delete itself in " + Data.MESSAGE_DELETE_DELAY + " seconds)");
             IMessage m = await ReplyAsync(embed: builder.Build());
-            Data.tempMessages.Add(new TempMessage(m, Data.MESSAGE_DELETE_DELAY));
-            Data.tempMessages.Add(new TempMessage(Context.Message, Data.MESSAGE_DELETE_DELAY));
+            //Data.tempMessages.Add(new TempMessage(m, Data.MESSAGE_DELETE_DELAY));
+            //Data.tempMessages.Add(new TempMessage(Context.Message, Data.MESSAGE_DELETE_DELAY));
         }
 
         [Command("Deny")]
@@ -148,8 +154,8 @@ namespace InfiniBot
 
             builder.WithFooter("(This message will delete itself in " + Data.MESSAGE_DELETE_DELAY + " seconds)");
             IMessage m = await ReplyAsync(embed: builder.Build());
-            Data.tempMessages.Add(new TempMessage(m, Data.MESSAGE_DELETE_DELAY));
-            Data.tempMessages.Add(new TempMessage(Context.Message, Data.MESSAGE_DELETE_DELAY));
+            //Data.tempMessages.Add(new TempMessage(m, Data.MESSAGE_DELETE_DELAY));
+            //Data.tempMessages.Add(new TempMessage(Context.Message, Data.MESSAGE_DELETE_DELAY));
         }
 
         [Command("Approve")]
@@ -198,8 +204,8 @@ namespace InfiniBot
 
             builder.WithFooter("(This message will delete itself in " + Data.MESSAGE_DELETE_DELAY + " seconds)");
             IMessage m = await ReplyAsync(embed: builder.Build());
-            Data.tempMessages.Add(new TempMessage(m, Data.MESSAGE_DELETE_DELAY));
-            Data.tempMessages.Add(new TempMessage(Context.Message, Data.MESSAGE_DELETE_DELAY));
+            //Data.tempMessages.Add(new TempMessage(m, Data.MESSAGE_DELETE_DELAY));
+            //Data.tempMessages.Add(new TempMessage(Context.Message, Data.MESSAGE_DELETE_DELAY));
         }
 
         public List<string> GetRequests()
