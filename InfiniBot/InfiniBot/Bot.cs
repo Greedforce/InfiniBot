@@ -114,7 +114,7 @@ namespace InfiniBot
 
             // Create RoleContainer and add it to the file.
             RoleContainer roleContainer = new RoleContainer(socketRole.Name, joinable, roleType);
-            Data.AddContainer(roleContainer, Data.ROLE_PATH);
+            Data.AddContainer(roleContainer, Data.FILE_PATH + Data.ROLE_FILE);
 
             return Task.CompletedTask;
         }
@@ -122,12 +122,12 @@ namespace InfiniBot
         private Task RoleDeleted(SocketRole socketRole)
         {
             // Get RoleContainer if it exists.
-            List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.ROLE_PATH);
+            List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.FILE_PATH + Data.ROLE_FILE);
             RoleContainer roleContainer = roleContainers.FirstOrDefault(rc => rc.name.ToLower() == socketRole.Name.ToLower());
             if (roleContainer != null)
             {
                 // Remove RoleContainer.
-                Data.RemoveContainer(roleContainer, Data.ROLE_PATH);
+                Data.RemoveContainer(roleContainer, Data.FILE_PATH + Data.ROLE_FILE);
             }
 
             return Task.CompletedTask;
@@ -136,7 +136,7 @@ namespace InfiniBot
         private Task RoleEdited(SocketRole prevSocketRole, SocketRole socketRole)
         {
             // Get roleContainers and check if role exists.
-            List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.ROLE_PATH);
+            List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.FILE_PATH + Data.ROLE_FILE);
             RoleContainer roleContainer = roleContainers.FirstOrDefault(rc => rc.name.ToLower() == prevSocketRole.Name.ToLower());
             if (roleContainer != null)
             {
@@ -148,7 +148,7 @@ namespace InfiniBot
                     roleContainer.joinable = false;
                     roleContainer.roleType = RoleType.Admin;
                 }
-                Data.SaveContainers(roleContainers, Data.ROLE_PATH);
+                Data.SaveContainers(roleContainers, Data.FILE_PATH + Data.ROLE_FILE);
             }
 
             return Task.CompletedTask;

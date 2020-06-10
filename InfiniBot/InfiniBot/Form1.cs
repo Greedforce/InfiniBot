@@ -19,7 +19,7 @@ namespace InfiniBot
         public Form()
         {
             InitializeComponent();
-            List<TokenContainer> tokenContainers = Data.GetContainers<TokenContainer>(Data.TOKEN_PATH);
+            List<TokenContainer> tokenContainers = Data.GetContainers<TokenContainer>(Data.FILE_PATH + Data.TOKEN_FILE);
             string[] names = new string[tokenContainers.Count];
             for (int i = 0; i < tokenContainers.Count; i++)
             {
@@ -123,7 +123,7 @@ namespace InfiniBot
                     Data.AddToken(comboBoxToken.Text);
                 }*/
                 string token = comboBoxToken.Text;
-                TokenContainer tc = Data.GetContainers<TokenContainer>(Data.TOKEN_PATH).FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text);
+                TokenContainer tc = Data.GetContainers<TokenContainer>(Data.FILE_PATH + Data.TOKEN_FILE).FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text);
                 if(tc != null)
                 {
                     token = tc.token;
@@ -148,12 +148,12 @@ namespace InfiniBot
                 buttonStartBot.Enabled = false;
                 buttonStopBot.Enabled = true;
 
-                if (Data.GetContainers<TokenContainer>(Data.TOKEN_PATH).FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text) == null)
+                if (Data.GetContainers<TokenContainer>(Data.FILE_PATH + Data.TOKEN_FILE).FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text) == null)
                 {
                     try
                     {
                         Console.WriteLine(bot.client.CurrentUser);
-                        Data.AddContainer<TokenContainer>(new TokenContainer(bot.client.CurrentUser.Username, comboBoxToken.Text), Data.TOKEN_PATH);
+                        Data.AddContainer(new TokenContainer(bot.client.CurrentUser.Username, comboBoxToken.Text), Data.FILE_PATH + Data.TOKEN_FILE);
                         comboBoxToken.Items.Add(bot.client.CurrentUser.Username);
                         comboBoxToken.Text = bot.client.CurrentUser.Username;
                     }
@@ -220,10 +220,10 @@ namespace InfiniBot
         {
             if (!string.IsNullOrEmpty(comboBoxToken.Text))
             {
-                TokenContainer tc = Data.GetContainers<TokenContainer>(Data.TOKEN_PATH).FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text);
+                TokenContainer tc = Data.GetContainers<TokenContainer>(Data.FILE_PATH + Data.TOKEN_FILE).FirstOrDefault(x => x.name == comboBoxToken.Text || x.token == comboBoxToken.Text);
                 if (tc != null)
                 {
-                    Data.RemoveContainer(tc, Data.TOKEN_PATH);
+                    Data.RemoveContainer(tc, Data.FILE_PATH + Data.TOKEN_FILE);
                     comboBoxToken.Items.Remove(comboBoxToken.Text);
                     comboBoxToken.Text = "";
                 }
