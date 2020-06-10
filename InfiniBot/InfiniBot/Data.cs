@@ -32,9 +32,9 @@ namespace InfiniBot
         public const string
             BOT_PREFIX = "!",
             FILE_PATH = "BotFiles\\",
-            TOKEN_PATH = "token.json",
-            ROLE_PATH = "role.json",
-            REQUESTS_AWAITING_APPROVAL_FILE_NAME = "RequestsAwaitingApproval.txt",
+            TOKEN_FILE = "token.json",
+            ROLE_FILE = "role.json",
+            REQUEST_FILE = "request.json",
             URL_IMAGE_INFINITY_GAMING = "https://i.imgur.com/hQR0KSE.png",
             URL_ERROR_ICON = "https://i.imgur.com/HSrsLjE.png";
 
@@ -48,6 +48,9 @@ namespace InfiniBot
 
         public const int
             CHAR_LIMIT = 2000,
+            EMBED_TITLE_CHAR_LIMIT = 256,
+            EMBED_DESCRIPTION_CHAR_LIMIT = 2048,
+            EMBED_FIELD_LIMIT = 25,
             MESSAGE_RETRIEVAL_MAX = 100,
             MESSAGE_DELETE_DELAY = 5; // In seconds.
 
@@ -153,7 +156,7 @@ namespace InfiniBot
         public static EmbedBuilder AddRoleFields(EmbedBuilder builder, bool includeUnjoinable = false, RoleType roleType = RoleType.Last)
         {
             // Get the RoleContainers.
-            List<RoleContainer> roleContainers = GetContainers<RoleContainer>(ROLE_PATH);
+            List<RoleContainer> roleContainers = GetContainers<RoleContainer>(FILE_PATH + ROLE_FILE);
 
             // Roles are put into different fields depending on their roleType and neatly stacked for the return message.
             // If a RoleType has been specified it skips the other types. 

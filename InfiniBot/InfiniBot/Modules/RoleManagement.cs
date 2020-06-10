@@ -202,7 +202,7 @@ namespace InfiniBot.Modules
                 // Autocorrecting goes here.
 
                 // Get the roleContainer corresponding to the role the user want to join.
-                List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.ROLE_PATH);
+                List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.FILE_PATH + Data.ROLE_FILE);
                 RoleContainer roleContainer = roleContainers.FirstOrDefault(rc => rc.name.ToLower() == rn.ToLower());
                 
                 if (roleContainer != null)
@@ -305,7 +305,7 @@ namespace InfiniBot.Modules
                 // Autocorrecting goes here.
 
                 // Get the roleContainer corresponding to the role the user want to leave.
-                List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.ROLE_PATH);
+                List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.FILE_PATH + Data.ROLE_FILE);
                 RoleContainer roleContainer = roleContainers.FirstOrDefault(rc => rc.name.ToLower() == rn.ToLower());
 
                 if (roleContainer != null)
@@ -464,7 +464,7 @@ namespace InfiniBot.Modules
             // Sort the roleContainers after roleType and save them to file.
             roleContainers.Sort((a, b) => a.roleType.CompareTo(b.roleType));
 
-            Data.SaveContainers(roleContainers, Data.ROLE_PATH);
+            Data.SaveContainers(roleContainers, Data.FILE_PATH + Data.ROLE_FILE);
 
             // Return feedback message.
             IMessage m = await ReplyAsync(embed: new EmbedBuilder()
@@ -501,7 +501,7 @@ namespace InfiniBot.Modules
         {
             IMessage m;
             // Get SocketRole and check if role exists.
-            List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.ROLE_PATH);
+            List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.FILE_PATH + Data.ROLE_FILE);
             SocketRole socketRole = Context.Guild.Roles.FirstOrDefault(sr => sr.Name.ToLower() == role.ToLower());
             if(socketRole != null)
             {
@@ -509,7 +509,7 @@ namespace InfiniBot.Modules
                 {
                     // Create RoleContainer and add it to the file.
                     RoleContainer roleContainer = new RoleContainer(socketRole.Name, joinable, type);
-                    Data.AddContainer(roleContainer, Data.ROLE_PATH);
+                    Data.AddContainer(roleContainer, Data.FILE_PATH + Data.ROLE_FILE);
 
                     // Return feedback message.
                     m = await ReplyAsync(
@@ -560,12 +560,12 @@ namespace InfiniBot.Modules
         {
             IMessage m;
             // Get RoleContainer if it exists.
-            List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.ROLE_PATH);
+            List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.FILE_PATH + Data.ROLE_FILE);
             RoleContainer roleContainer = roleContainers.FirstOrDefault(rc => rc.name.ToLower() == role.ToLower());
             if (roleContainer != null)
             {
                 // Remove RoleContainer.
-                Data.RemoveContainer(roleContainer, Data.ROLE_PATH);
+                Data.RemoveContainer(roleContainer, Data.FILE_PATH + Data.ROLE_FILE);
 
                 // Return feedback message.
                 m = await ReplyAsync(
@@ -614,7 +614,7 @@ namespace InfiniBot.Modules
         {
             IMessage m;
             // Get roleContainers and check if role exists.
-            List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.ROLE_PATH);
+            List<RoleContainer> roleContainers = Data.GetContainers<RoleContainer>(Data.FILE_PATH + Data.ROLE_FILE);
             RoleContainer roleContainer = roleContainers.FirstOrDefault(rc => rc.name.ToLower() == role.ToLower());
             SocketRole socketRole = Context.Guild.Roles.FirstOrDefault(sr => sr.Name.ToLower() == role.ToLower());
             if (roleContainer != null)
@@ -626,7 +626,7 @@ namespace InfiniBot.Modules
                     roleContainer.roleType = type;
                     roleContainer.joinable = joinable;
 
-                    Data.SaveContainers(roleContainers, Data.ROLE_PATH);
+                    Data.SaveContainers(roleContainers, Data.FILE_PATH + Data.ROLE_FILE);
 
                     // Return feedback message.
                     m = await ReplyAsync(
