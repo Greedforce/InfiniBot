@@ -59,7 +59,12 @@ namespace InfiniBot
 
             Embed embed = Data.GetJoinEmbed(Context.Guild);
             await user.SendMessageAsync(embed: embed);
-            IMessage m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithTitle("Join Message Sent").WithDescription($"I've PMed the join message to {user.Username}").Build());
+            IMessage m = await ReplyAsync(
+                embed: new EmbedBuilder()
+                .WithTitle("Join Message Sent")
+                .WithDescription($"I've PMed the join message to {user.Username}")
+                .WithAutoDeletionFooter()
+                .Build());
             await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
             await m.DeleteAsync();
         }

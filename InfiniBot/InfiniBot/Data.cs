@@ -36,8 +36,7 @@ namespace InfiniBot
             ROLE_PATH = "role.json",
             REQUESTS_AWAITING_APPROVAL_FILE_NAME = "RequestsAwaitingApproval.txt",
             URL_IMAGE_INFINITY_GAMING = "https://i.imgur.com/hQR0KSE.png",
-            URL_ERROR_ICON = "https://i.imgur.com/HSrsLjE.png",
-            EMBED_FOOTER_DELETE = "(This message will delete itself in 5 seconds)";
+            URL_ERROR_ICON = "https://i.imgur.com/HSrsLjE.png";
 
         public const ulong
             GUILD_ID_INFINITY_GAMING = 238251468384108545,
@@ -49,7 +48,7 @@ namespace InfiniBot
         public const int
             CHAR_LIMIT = 2000,
             MESSAGE_RETRIEVAL_MAX = 100,
-            MESSAGE_DELETE_DELAY = 5; // Remember to update the string above as well if you change this value
+            MESSAGE_DELETE_DELAY = 5; // In seconds.
 
         public static readonly Color
             COLOR_BOT = new Color(32, 102, 148),
@@ -223,16 +222,6 @@ namespace InfiniBot
                 .WithDescription(description)
                 .WithFooter("p.s. If you have any further questions, feel free to ask an admin. (Or use the `!Help` command.)")
                 .Build();
-        }
-
-        public static EmbedBuilder GetFeedbackEmbedBuilder()
-        {
-            EmbedBuilder builder = new EmbedBuilder();
-
-            builder.WithColor(COLOR_BOT)
-                .WithFooter(EMBED_FOOTER_DELETE);
-
-            return builder;
         }
         
 

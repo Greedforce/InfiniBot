@@ -166,7 +166,7 @@
     <Compile Include="Containers\ReactionGUIContainer.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="Attribute\ExampleAttribute.cs" />
-    <Compile Include="EmbedBuilderExtensionMethods.cs" />
+    <Compile Include="Extensions\EmbedBuilderExtensionMethods.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
