@@ -238,5 +238,28 @@ namespace InfiniBot
                 int.Parse(hexCode.Remove(0, 3).Remove(4, 2), System.Globalization.NumberStyles.HexNumber),
                 int.Parse(hexCode.Remove(0, 5), System.Globalization.NumberStyles.HexNumber));
         }
+
+
+        public static string GetIndexEnding(int index)
+        {
+            string position;
+            if (index % 10 == 1)
+            {
+                position = "st";
+            }
+            else if (index % 10 == 2)
+            {
+                position = "nd";
+            }
+            else if (index % 10 == 3)
+            {
+                position = "rd";
+            }
+            else
+            {
+                position = "th";
+            }
+            return position;
+        }
     }
 }
