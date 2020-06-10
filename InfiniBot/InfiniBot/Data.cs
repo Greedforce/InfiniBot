@@ -44,12 +44,13 @@ namespace InfiniBot
             CHANNEL_ID_GENERAL = 238288636527902730,
             CHANNEL_ID_REQUEST_VOTING = 486212280653185025,
             CHANNEL_ID_ADMIN = 248126773869543424,
-            MESSAGE_ID_ADMIN_SERVER_REQUEST_INFO = 491946885624496129;
+            MESSAGE_ID_ADMIN_SERVER_REQUEST_INFO = 491946885624496129,
+            ROLE_ID_ADMIN = 238254031896576001;
 
         public const int
             CHAR_LIMIT = 2000,
             MESSAGE_RETRIEVAL_MAX = 100,
-            MESSAGE_DELETE_DELAY = 5; // Remember to update the string above as well if you change this value
+            MESSAGE_DELETE_DELAY = 5; // In seconds. Remember to update the string above as well if you change this value
 
         public static readonly Color
             COLOR_BOT = new Color(32, 102, 148),
