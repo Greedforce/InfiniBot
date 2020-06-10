@@ -52,7 +52,12 @@ namespace InfiniBot.Modules
                 feedbackDescription += $"`{type.ToString()}`";
             }
             feedbackDescription += " roles.";
-            IMessage m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithTitle("Role list sent").WithDescription(feedbackDescription).Build());
+            IMessage m = await ReplyAsync(
+                embed: new EmbedBuilder()
+                .WithTitle("Role list sent")
+                .WithDescription(feedbackDescription)
+                .WithAutoDeletionFooter()
+                .Build());
 
             // Delete prompt and feedback messages.
             await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
@@ -138,16 +143,32 @@ namespace InfiniBot.Modules
                     // Add "associated privileges" (beyond @everyone)
 
                     // PM preview to user.
-                    await Context.User.SendMessageAsync(embed: new EmbedBuilder().WithColor(socketRole.Color).WithTitle("Role Preview").WithDescription(toReturn).Build());
+                    await Context.User.SendMessageAsync(
+                        embed: new EmbedBuilder()
+                        .WithColor(socketRole.Color)
+                        .WithTitle("Role Preview")
+                        .WithDescription(toReturn)
+                        .Build());
                 }
                 else
                 {
-                    messages.Add(await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("ERROR: Role not found").WithDescription($"Could not find a role matching the name `{rn}`.\nFor a full list of roles, use the `roles` command.").Build()));
+                    messages.Add(await ReplyAsync(
+                        embed: new EmbedBuilder()
+                        .WithColor(Data.COLOR_ERROR)
+                        .WithTitle("ERROR: Role not found")
+                        .WithDescription($"Could not find a role matching the name `{rn}`.\nFor a full list of roles, use the `roles` command.")
+                        .WithAutoDeletionFooter()
+                        .Build()));
                 }
             }
 
             // Return feedback message.
-            messages.Add(await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithTitle("Preview(s) sent").WithDescription("I've PMed you the role preview(s).").Build()));
+            messages.Add(await ReplyAsync(
+                embed: new EmbedBuilder()
+                .WithTitle("Preview(s) sent")
+                .WithDescription("I've PMed you the role preview(s).")
+                .WithAutoDeletionFooter()
+                .Build()));
 
             // Delete prompt and feedback messages.
             await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
@@ -188,7 +209,13 @@ namespace InfiniBot.Modules
                 {
                     if (((SocketGuildUser)Context.User).Roles.FirstOrDefault(r => r.Name.ToLower() == roleContainer.name.ToLower()) != null)
                     {
-                        messages.Add(await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("User already in role").WithDescription($"You already have the `{roleContainer.name}` role. If you wanna leave the role, use the `leave` command.").Build()));
+                        messages.Add(await ReplyAsync(
+                            embed: new EmbedBuilder()
+                            .WithColor(Data.COLOR_ERROR)
+                            .WithTitle("User already in role")
+                            .WithDescription($"You already have the `{roleContainer.name}` role. If you wanna leave the role, use the `leave` command.")
+                            .WithAutoDeletionFooter()
+                            .Build()));
                     }
                     else
                     {
@@ -215,17 +242,34 @@ namespace InfiniBot.Modules
                             // Add role and return feedback message.
                             SocketRole socketRole = Context.Guild.Roles.FirstOrDefault(r => r.Name == roleContainer.name);
                             await ((SocketGuildUser)Context.User).AddRoleAsync(socketRole);
-                            messages.Add(await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_SUCCESS).WithTitle("Role joined").WithDescription($"You have successfully joined the `{socketRole.Name}` role and now have access to all the text and voice channels associated with it.").Build()));
+                            messages.Add(await ReplyAsync(
+                                embed: new EmbedBuilder()
+                                .WithColor(Data.COLOR_SUCCESS)
+                                .WithTitle("Role joined")
+                                .WithDescription($"You have successfully joined the `{socketRole.Name}` role and now have access to all the text and voice channels associated with it.")
+                                .WithAutoDeletionFooter()
+                                .Build()));
                         }
                         else
                         {
-                            messages.Add(await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("Access to role denied").WithDescription($"The `{roleContainer.name}` role is not joinable. It is strictly distributed by admins.").Build()));
+                            messages.Add(await ReplyAsync(
+                                embed: new EmbedBuilder()
+                                .WithColor(Data.COLOR_ERROR)
+                                .WithTitle("Access to role denied")
+                                .WithDescription($"The `{roleContainer.name}` role is not joinable. It is strictly distributed by admins.")
+                                .WithAutoDeletionFooter()
+                                .Build()));
                         }
                     }
                 }
                 else
                 {
-                    messages.Add(await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("Role not found").WithDescription($"Could not find a role matching the name `{rn}`.\nFor a full list of roles, use the `roles` command.").Build()));
+                    messages.Add(await ReplyAsync(
+                        embed: new EmbedBuilder()
+                        .WithColor(Data.COLOR_ERROR).WithTitle("Role not found")
+                        .WithDescription($"Could not find a role matching the name `{rn}`.\nFor a full list of roles, use the `roles` command.")
+                        .WithAutoDeletionFooter()
+                        .Build()));
                 }
             }
 
@@ -268,7 +312,12 @@ namespace InfiniBot.Modules
                 {
                     if (((SocketGuildUser)Context.User).Roles.FirstOrDefault(r => r.Name.ToLower() == roleContainer.name.ToLower()) == null)
                     {
-                        msgs.Add(await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("User not in role").WithDescription($"You do not have the `{roleContainer.name}` role. If you wanna join the role, use the `join` command.").Build()));
+                        msgs.Add(await ReplyAsync(
+                            embed: new EmbedBuilder()
+                            .WithColor(Data.COLOR_ERROR)
+                            .WithTitle("User not in role").WithDescription($"You do not have the `{roleContainer.name}` role. If you wanna join the role, use the `join` command.")
+                            .WithAutoDeletionFooter()
+                            .Build()));
                     }
                     else
                     {
@@ -277,17 +326,35 @@ namespace InfiniBot.Modules
                             // Add role and return feedback message.
                             SocketRole socketRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == roleContainer.name.ToLower());
                             await ((SocketGuildUser)Context.User).RemoveRoleAsync(socketRole);
-                            msgs.Add(await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_SUCCESS).WithTitle("Role Left").WithDescription($"You have successfully left the `{socketRole.Name}` role and no longer have access to all the text and voice channels associated with it.").Build()));
+                            msgs.Add(await ReplyAsync(
+                                embed: new EmbedBuilder()
+                                .WithColor(Data.COLOR_SUCCESS)
+                                .WithTitle("Role Left")
+                                .WithDescription($"You have successfully left the `{socketRole.Name}` role and no longer have access to all the text and voice channels associated with it.")
+                                .WithAutoDeletionFooter()
+                                .Build()));
                         }
                         else
                         {
-                            msgs.Add(await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("Access to role denied").WithDescription($"The `{roleContainer.name}` role is not leaveable. It is strictly distributed by admins.").Build()));
+                            msgs.Add(await ReplyAsync(
+                                embed: new EmbedBuilder()
+                                .WithColor(Data.COLOR_ERROR)
+                                .WithTitle("Access to role denied")
+                                .WithDescription($"The `{roleContainer.name}` role is not leaveable. It is strictly distributed by admins.")
+                                .WithAutoDeletionFooter()
+                                .Build()));
                         }
                     }
                 }
                 else
                 {
-                    msgs.Add(await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("Role not found").WithDescription($"Could not find a role matching the name `{rn}`.\nFor a full list of roles, use the `roles` command.").Build()));
+                    msgs.Add(await ReplyAsync(
+                        embed: new EmbedBuilder()
+                        .WithColor(Data.COLOR_ERROR)
+                        .WithTitle("Role not found")
+                        .WithDescription($"Could not find a role matching the name `{rn}`.\nFor a full list of roles, use the `roles` command.")
+                        .WithAutoDeletionFooter()
+                        .Build()));
                 }
             }
 
@@ -400,7 +467,11 @@ namespace InfiniBot.Modules
             Data.SaveContainers(roleContainers, Data.ROLE_PATH);
 
             // Return feedback message.
-            IMessage m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithTitle("Scan Complete").WithDescription($"All roles on `{Context.Guild.Name}` have now been scanned. To get a list of them, use the `Roles` command. You can also further edit these roles by using the `Edit`, `Add` and `Remove` commands.").Build());
+            IMessage m = await ReplyAsync(embed: new EmbedBuilder()
+                .WithTitle("Scan Complete")
+                .WithDescription($"All roles on `{Context.Guild.Name}` have now been scanned. To get a list of them, use the `Roles` command. You can also further edit these roles by using the `Edit`, `Add` and `Remove` commands.")
+                .WithAutoDeletionFooter()
+                .Build());
 
             // Delete prompt and feedback messages.
             await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
@@ -441,16 +512,34 @@ namespace InfiniBot.Modules
                     Data.AddContainer(roleContainer, Data.ROLE_PATH);
 
                     // Return feedback message.
-                    m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_SUCCESS).WithTitle("Role added").WithDescription($"The `{roleContainer.name} ({roleContainer.roleType} - {roleContainer.joinable})` role has been successfully added to the database.").Build());
+                    m = await ReplyAsync(
+                        embed: new EmbedBuilder()
+                        .WithColor(Data.COLOR_SUCCESS)
+                        .WithTitle("Role added")
+                        .WithDescription($"The `{roleContainer.name} ({roleContainer.roleType} - {roleContainer.joinable})` role has been successfully added to the database.")
+                        .WithAutoDeletionFooter()
+                        .Build());
                 }
                 else
                 {
-                    m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("ERROR: Role not found").WithDescription($"The `{role}` role you specified already exist in the database.").Build());
+                    m = await ReplyAsync(
+                        embed: new EmbedBuilder()
+                        .WithColor(Data.COLOR_ERROR)
+                        .WithTitle("ERROR: Role not found")
+                        .WithDescription($"The `{role}` role you specified already exist in the database.")
+                        .WithAutoDeletionFooter()
+                        .Build());
                 }
             }
             else
             {
-                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("ERROR: Role not found").WithDescription($"The `{role}` role you specified does not exist on the server.").Build());
+                m = await ReplyAsync(
+                    embed: new EmbedBuilder()
+                    .WithColor(Data.COLOR_ERROR)
+                    .WithTitle("ERROR: Role not found")
+                    .WithDescription($"The `{role}` role you specified does not exist on the server.")
+                    .WithAutoDeletionFooter()
+                    .Build());
             }
 
             // Delete prompt and feedback messages.
@@ -479,11 +568,22 @@ namespace InfiniBot.Modules
                 Data.RemoveContainer(roleContainer, Data.ROLE_PATH);
 
                 // Return feedback message.
-                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("Role removed").WithDescription($"The `{roleContainer.name}` role has been successfully removed from the database.").Build());
+                m = await ReplyAsync(
+                    embed: new EmbedBuilder()
+                    .WithColor(Data.COLOR_ERROR)
+                    .WithTitle("Role removed")
+                    .WithDescription($"The `{roleContainer.name}` role has been successfully removed from the database.")
+                    .WithAutoDeletionFooter()
+                    .Build());
             }
             else
             {
-                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("ERROR: Role not found").WithDescription($"The `{role}` role you specified does not exist in the database.").Build());
+                m = await ReplyAsync(
+                    embed: new EmbedBuilder()
+                    .WithColor(Data.COLOR_ERROR)
+                    .WithTitle("ERROR: Role not found").WithDescription($"The `{role}` role you specified does not exist in the database.")
+                    .WithAutoDeletionFooter()
+                    .Build());
             }
 
             // Delete prompt and feedback messages.
@@ -529,16 +629,34 @@ namespace InfiniBot.Modules
                     Data.SaveContainers(roleContainers, Data.ROLE_PATH);
 
                     // Return feedback message.
-                    m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_SUCCESS).WithTitle("Role edited").WithDescription($"The `{roleContainer.name}` role has been successfully edited from `{prevType} - {prevJoinable}` to `{roleContainer.roleType} - {roleContainer.joinable}`").Build());
+                    m = await ReplyAsync(
+                        embed: new EmbedBuilder()
+                        .WithColor(Data.COLOR_SUCCESS)
+                        .WithTitle("Role edited")
+                        .WithDescription($"The `{roleContainer.name}` role has been successfully edited from `{prevType} - {prevJoinable}` to `{roleContainer.roleType} - {roleContainer.joinable}`")
+                        .WithAutoDeletionFooter()
+                        .Build());
                 }
                 else
                 {
-                    m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("ERROR: Role not found").WithDescription($"The `{role}` role you specified does not exist on the server.").Build());
+                    m = await ReplyAsync(
+                        embed: new EmbedBuilder()
+                        .WithColor(Data.COLOR_ERROR)
+                        .WithTitle("ERROR: Role not found")
+                        .WithDescription($"The `{role}` role you specified does not exist on the server.")
+                        .WithAutoDeletionFooter()
+                        .Build());
                 }
             }
             else
             {
-                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("ERROR: Role not found").WithDescription($"The `{role}` role you specified does not exist in the database.").Build());
+                m = await ReplyAsync(
+                    embed: new EmbedBuilder()
+                    .WithColor(Data.COLOR_ERROR)
+                    .WithTitle("ERROR: Role not found")
+                    .WithDescription($"The `{role}` role you specified does not exist in the database.")
+                    .WithAutoDeletionFooter()
+                    .Build());
             }
 
             // Delete prompt and feedback messages.

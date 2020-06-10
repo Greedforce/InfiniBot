@@ -49,7 +49,13 @@ namespace InfiniBot
                 skipText = "(skipping " + skip + ") ";
             }
             await ((ITextChannel)Context.Channel).DeleteMessagesAsync(messages);
-            IUserMessage m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_SUCCESS).WithTitle("Prune successful").WithDescription($"The last {amount} " + skipText + "messages sent in this channel have been deleted.").Build());
+            IUserMessage m = await ReplyAsync(
+                embed: new EmbedBuilder()
+                .WithColor(Data.COLOR_SUCCESS)
+                .WithTitle("Prune successful")
+                .WithDescription($"The last {amount} " + skipText + "messages sent in this channel have been deleted.")
+                .WithAutoDeletionFooter()
+                .Build());
             await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
             await m.DeleteAsync();
         }
@@ -85,7 +91,13 @@ namespace InfiniBot
                 skipText = "(skipping " + skip + ") ";
             }
             await ((ITextChannel)Context.Channel).DeleteMessagesAsync(messages);
-            IUserMessage m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_SUCCESS).WithTitle("Prune successful").WithDescription($"The last {amount} " + skipText + "messages sent in this channel have been deleted.").Build());
+            IUserMessage m = await ReplyAsync(
+                embed: new EmbedBuilder()
+                .WithColor(Data.COLOR_SUCCESS)
+                .WithTitle("Prune successful")
+                .WithDescription($"The last {amount} " + skipText + "messages sent in this channel have been deleted.")
+                .WithAutoDeletionFooter()
+                .Build());
             await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
             await m.DeleteAsync();
         }
@@ -178,11 +190,23 @@ namespace InfiniBot
                     skipText = "(skipping " + skip + ") ";
                 }
                 await ((ITextChannel)Context.Channel).DeleteMessagesAsync(messages);
-                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_SUCCESS).WithTitle("Move successful").WithDescription($"The last {amount} " + skipText + "messages sent in this channel have been moved to " + textChannel.Mention + ".").Build());
+                m = await ReplyAsync(
+                    embed: new EmbedBuilder()
+                    .WithColor(Data.COLOR_SUCCESS)
+                    .WithTitle("Move successful")
+                    .WithDescription($"The last {amount} " + skipText + "messages sent in this channel have been moved to " + textChannel.Mention + ".")
+                    .WithAutoDeletionFooter()
+                    .Build());
             }
             else
             {
-                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("Move unsuccessful").WithDescription($"Could not find channel with id: `" + channel + "´. Please make sure you post a valid channel id.").Build());
+                m = await ReplyAsync(
+                    embed: new EmbedBuilder()
+                    .WithColor(Data.COLOR_ERROR)
+                    .WithTitle("Move unsuccessful")
+                    .WithDescription($"Could not find channel with id: `" + channel + "´. Please make sure you post a valid channel id.")
+                    .WithAutoDeletionFooter()
+                    .Build());
             }
             await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
             await m.DeleteAsync();
@@ -272,11 +296,21 @@ namespace InfiniBot
                     skipText = "(skipping " + skip + ") ";
                 }
                 await ((ITextChannel)Context.Channel).DeleteMessagesAsync(messages);
-                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_SUCCESS).WithTitle("Move successful").WithDescription($"The last {amount} " + skipText + "messages sent in this channel have been moved to " + textChannel.Mention + ".").Build());
+                m = await ReplyAsync(
+                    embed: new EmbedBuilder()
+                    .WithColor(Data.COLOR_SUCCESS)
+                    .WithTitle("Move successful").WithDescription($"The last {amount} " + skipText + "messages sent in this channel have been moved to " + textChannel.Mention + ".")
+                    .WithAutoDeletionFooter()
+                    .Build());
             }
             else
             {
-                m = await ReplyAsync(embed: Data.GetFeedbackEmbedBuilder().WithColor(Data.COLOR_ERROR).WithTitle("Move unsuccessful").WithDescription($"Could not find channel with id: `" + channel + "´. Please make sure you post a valid channel id.").Build());
+                m = await ReplyAsync(
+                    embed: new EmbedBuilder()
+                    .WithColor(Data.COLOR_ERROR)
+                    .WithTitle("Move unsuccessful").WithDescription($"Could not find channel with id: `" + channel + "´. Please make sure you post a valid channel id.")
+                    .WithAutoDeletionFooter()
+                    .Build());
             }
             await Task.Delay(Data.MESSAGE_DELETE_DELAY * 1000);
             await m.DeleteAsync();
