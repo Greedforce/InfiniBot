@@ -9,7 +9,7 @@ using Discord.Commands;
 namespace InfiniBot
 {
     [Group("Set")]
-    public class BotPropertyCommands : ModuleBase<SocketCommandContext>
+    public class BotPropertyModule : ModuleBase<SocketCommandContext>
     {
         [Command("Nickname", RunMode = RunMode.Async)]
         [Summary("Changes the bots nickname.")]

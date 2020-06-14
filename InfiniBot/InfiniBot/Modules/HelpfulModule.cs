@@ -10,7 +10,7 @@ using Discord.Commands;
 
 namespace InfiniBot
 {
-    public class HelpfulCommands : ModuleBase<SocketCommandContext>
+    public class HelpfulModule : ModuleBase<SocketCommandContext>
     {
         [Command("Help", RunMode = RunMode.Async)]
         [Summary("Provides information on a specific command or module, or a list of all available commands and modules, if no parameter is provided.")]

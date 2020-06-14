@@ -12,7 +12,7 @@ using Discord.WebSocket;
 
 namespace InfiniBot
 {
-    public class MessageManagementCommands : ModuleBase<SocketCommandContext>
+    public class MessageManagementModule : ModuleBase<SocketCommandContext>
     {
         [Command("Prune", RunMode = RunMode.Async)]
         [RequireUserPermission(GuildPermission.Administrator, Group = "user")]

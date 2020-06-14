@@ -12,7 +12,7 @@ using Discord.WebSocket;
 
 namespace InfiniBot
 {
-    public class RequestManagementCommands : ModuleBase<SocketCommandContext>
+    public class RequestManagementModule : ModuleBase<SocketCommandContext>
     {
         [Command("Request")]
         [Summary("Adds a server request. Requests must first be approved by an admin before they can be voted on. Please provide links if possible and relevant.")]

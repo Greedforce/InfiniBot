@@ -9,7 +9,7 @@ using Discord.WebSocket;
 
 namespace InfiniBot
 {
-    public class AdminCommands : ModuleBase<SocketCommandContext>
+    public class AdminModule : ModuleBase<SocketCommandContext>
     {
         [Command("Shutdown", RunMode = RunMode.Sync)]
         [Summary("Shuts down the bot and provides the reason, if given.")]

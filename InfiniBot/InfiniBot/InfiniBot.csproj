@@ -174,16 +174,16 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Attribute\HiddenAttribute.cs" />
-    <Compile Include="Modules\AdminCommands.cs" />
-    <Compile Include="Modules\BotPropertyCommands.cs" />
-    <Compile Include="Modules\HelpfulCommands.cs" />
-    <Compile Include="Modules\MessageManagementCommands.cs" />
-    <Compile Include="Modules\RoleManagement.cs" />
+    <Compile Include="Modules\AdminModule.cs" />
+    <Compile Include="Modules\BotPropertyModule.cs" />
+    <Compile Include="Modules\HelpfulModule.cs" />
+    <Compile Include="Modules\MessageManagementModule.cs" />
+    <Compile Include="Modules\RoleManagementModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Containers\RoleContainer.cs" />
     <Compile Include="Containers\TokenContainer.cs" />
-    <Compile Include="Modules\RequestManagementCommands.cs" />
+    <Compile Include="Modules\RequestManagementModule.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

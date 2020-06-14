@@ -8,9 +8,9 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
-namespace InfiniBot.Modules
+namespace InfiniBot
 {
-    public class RoleManagement : ModuleBase<SocketCommandContext>
+    public class RoleManagementModule : ModuleBase<SocketCommandContext>
     {
         [Command("Roles", RunMode = RunMode.Async)]
         [Summary("PMs the user a list of all available roles")]
