@@ -179,6 +179,7 @@
     <Compile Include="Modules\HelpfulCommands.cs" />
     <Compile Include="Modules\MessageManagementCommands.cs" />
     <Compile Include="Modules\RoleManagement.cs" />
+    <Compile Include="Modules\WarningModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Containers\RoleContainer.cs" />
